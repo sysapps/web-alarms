@@ -215,7 +215,7 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <ol>
 <li>Make a request to the system to retrieve the alarms that were registered by the current application and that did not go off yet.</li>
 <li>Create a new <code><a href="#alarmrequest">AlarmRequest</a></code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
-<li>If there is an error occurs, run these substeps and then terminate these steps:
+<li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
 <li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
@@ -233,12 +233,30 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <ol>
 <li>The first argument <code>date</code> is a <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object representing when the alarm will trigger.</li>
 <li>The second argument <code>respectTimezone</code> can be either <code>"respectTimezone"</code> or <code>"ignoreTimezone"</code> to specify if the user agent needs to ignore the timezone information of that <code>Date</code> object. When <code>"respectTimezone"</code> is passed, we will alert that application when that time happens in that timezone. See <a href="#timezone-dst">Timezones and daylight savings</a> section for examples.</li>
-<li>The third argument <code>data</code> can be optionally specified to pass the <span>JSON-serializable data</span> to be associated with the alarm. Note that a unique ID will be returned to refer to the added alarm.</li>
+<li>The third argument <code>data</code> can be optionally specified to pass the <span>JSON-serializable data</span> to be associated with the alarm.</li>
 </ol>
-<p>A user agent <em class="ct">must</em> handle the error cases in the following manner:
+
+<p>When invoked, the <a href="#alarmmanager-add" title="AlarmManager-add"><code>add</code></a> method <em class="ct">must</em> run the following steps:
 <ol>
-<li>If the <code>date</code> argument is in the past, the implementation <em class="ct">must</em> set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>, and <a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">fire an event</a> named <code>error</code> at the request.</li>
-<li>For other error cases, a <code>DOMError</code> whose name is <code>"UnknownError"</code> is used.</li>
+<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>.</li>
+<li>Create a new <code><a href="#alarmrequest">AlarmRequest</a></code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
+<li>If an error occurs, run these substeps and then terminate these steps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
+<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code> if the <code>date</code> argument is in the past, and <code>"UnknownError"</code> otherwise.
+<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+</ol></li>
+<li>When the operation completed successfuly, run these substeps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
+<li>Let <em>a</em> be a new <code><a href="#alarm">Alarm</a></code> object.</li>
+<li>Set <em>a</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
+<li>Set <em>a</em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
+<li>Set <em>a</em>'s <code>respectTimezone</code> attribute to the <code>respectTimezone</code> argument.</li>
+<li>Set <em>a</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
+<li>Set the <code>result</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <em>a</em>.</li>
+<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+</ol></li>
 </ol>
 
 <p>The <dfn id="alarmmanager-remove" title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method is used to remove an alarm that has been added in the device with a unique ID.
