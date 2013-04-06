@@ -212,7 +212,7 @@ interface <dfn>AlarmManager</dfn> {
 
 <p>When invoked, the <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>respectTimezone</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
-<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>respectTimezone</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system must associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
+<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>respectTimezone</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
 <li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
@@ -233,12 +233,21 @@ interface <dfn>AlarmManager</dfn> {
 </ol></li>
 </ol>
 
-<p>The <dfn title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method is used to remove an alarm that has been added in the device with a unique ID.
-<p>If the alarm was successfully removed, the implementation <em class="ct">must</em> set the <code>result</code> attribute of the <code>AlarmRequest</code> to <code>true</code>, and <span data-anolis-spec=dom title=concept-event-fire>fire an event</span> named <code>success</code> at the request.
-If there was no alarm with the given identifier, the implementation <em class="ct">must</em> follow the same steps but set the <code>result</code> attribute of the <code>AlarmRequest</code> to <code>false</code>.
-<p>A user agent <em class="ct">must</em> handle the error cases in the following manner:
+<p>When invoked, the <dfn title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
-<li>If any error is returned, the implementation <em class="ct">must</em> set the <code>error</code> attribute of the <code>AlarmRequest</code> to a <code>DOMError</code> whose name is <code>"UnknownError"</code>, and dispatch an <code>error</code> event at the request.</li>
+<li>Make a request to the system to unregister the alarm with the given unique <code>alarmId</code> identifier.</li>
+<li>If an error occurs, run these substeps and then terminate these steps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
+<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
+<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+</ol></li>
+<li>When the operation completed successfuly, run these substeps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
+<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
+<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
+</ol></li>
 </ol>
 
 <h3>Interface <code title="">Alarm</code></h3>
