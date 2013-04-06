@@ -35,7 +35,7 @@
 <div class="head">
 	<h1>Web Alarms API Specification</h1>
 	
-	<h2 class="no-num no-toc" id="editor-draft-—-7-march-2013">Editor Draft — 7 March 2013</h2>
+	<h2 class="no-num no-toc" id="editor-draft-—-6-april-2013">Editor Draft — 6 April 2013</h2>
 	
 	<dl>
 		<dt>This version:
@@ -85,7 +85,7 @@
    <li><a href="#interface-alarmmanager"><span class="secno">4.2 </span>Interface <code title="">AlarmManager</code></a></li>
    <li><a href="#interface-alarm"><span class="secno">4.3 </span>Interface <code title="">Alarm</code></a></li>
    <li><a href="#interface-alarmrequest"><span class="secno">4.4 </span>Interface <code title="">AlarmRequest</code></a></li>
-   <li><a href="#interface-alarmevent-0"><span class="secno">4.5 </span>Interface <code title="AlarmEvent">AlarmEvent</code></a></li>
+   <li><a href="#the-alarm-system-message"><span class="secno">4.5 </span>The <code title="alarm-system-message">alarm</code> system message</a></li>
    <li><a href="#timezone-dst"><span class="secno">4.6 </span>Timezones and daylight savings</a>
     <ol class="toc">
      <li><a href="#crossing-daylight-savings-time-boundaries"><span class="secno">4.6.1 </span>Crossing daylight savings time boundaries</a></li>
@@ -144,11 +144,17 @@ request.onerror = function (e) {
 };
 </pre>
 
-<p>How to register a listener for an <a href="#alarmevent" title="AlarmEvent">alarm event</a>?
-<pre>function trigger(e) {
-  alert("alarm fired at: " + e.alarm.date);
+<p>How to register a listener for an <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <a href="#system-message">system message</a>?
+<pre>function onAlarmFired(alarm) {
+  alert("alarm fired at: " + alarm.date);
 }
-navigator.alarms.addEventListener("alarm", trigger);</pre>
+navigator.setMessageHandler("alarm", onAlarmFired);
+</pre>
+
+<p>How to know in advance if there exists any pending <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <a href="#system-message">system message</a>?
+<pre>if (navigator.hasPendingMessages("alarm"))
+  alert("There is at least 1 pending 'alarm' system message.");
+</pre>
 </div>
 
 <h2 id="conformance"><span class="secno">2 </span>Conformance</h2>
@@ -168,6 +174,8 @@ navigator.alarms.addEventListener("alarm", trigger);</pre>
 <p>The terms <dfn id="event-handler"><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers"> event handler</a></dfn>
 and <dfn id="event-handler-event-types"><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handler-event-type"> event handler event types</a></dfn>
 are defined in <a href="#refsHTML5">[HTML5]</a>.
+
+<p>The term <dfn id="system-message"><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in <a href="#refsRUNTIME">[RUNTIME]</a>.
 
 <h2 id="web-alarms-api"><span class="secno">4 </span>Web Alarms API</h2>
 <p><em>This section is non-normative.</em>
@@ -193,16 +201,14 @@ are defined in <a href="#refsHTML5">[HTML5]</a>.
 <p>The <dfn id="navigator-alarms" title="Navigator-alarms"><code>alarms</code></dfn> attribute provides the developer access to an <code><a href="#alarmmanager">AlarmManager</a></code>.
 
 <h3 id="interface-alarmmanager"><span class="secno">4.2 </span>Interface <code title="">AlarmManager</code></h3>
-<p>The <code><a href="#alarmmanager">AlarmManager</a></code> interface exposes methods to get, set or remove alarms. Alarms are application specific, so there is no way to see the alarms scheduled by other applications nor to modify them. Developers can use this interface to register event listeners to listen for when alarms trigger.
+<p>The <code><a href="#alarmmanager">AlarmManager</a></code> interface exposes methods to get, set or remove alarms. Alarms are application specific, so there is no way to see the alarms scheduled by other applications nor to modify them. Developers should set a message handler for the <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> to listen for when alarms trigger.
 
 <pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
-interface <dfn id="alarmmanager">AlarmManager</dfn> : <a class="external" href="http://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
+interface <dfn id="alarmmanager">AlarmManager</dfn> {
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-getall" title="AlarmManager-getAll">getAll</a>();
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">respectTimezone</var>, optional any <var title="">data</var>);
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
-
-  attribute EventHandler <a href="#alarmmanager-onalarm" title="AlarmManager-onalarm">onalarm</a>;
 };</pre>
 
 <p>When invoked, the <dfn id="alarmmanager-getall" title="AlarmManager-getAll"><code>getAll()</code></dfn> method creates an <code><a href="#alarmrequest">AlarmRequest</a></code> object, which, if successful, can be used to retrieve the <code><a href="#alarm">Alarm</a></code> objects corresponding to this application.
@@ -232,8 +238,6 @@ If there was no alarm with the given identifier, the implementation <em class="c
 <li>If any error is returned, the implementation <em class="ct">must</em> set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> to a <code>DOMError</code> whose name is <code>"UnknownError"</code>, and dispatch an <code>error</code> event at the request.</li>
 </ol>
 
-<p>The <dfn id="alarmmanager-onalarm" title="AlarmManager-onalarm"><code>onalarm</code></dfn> attribute is the <a href="#event-handler-idl-attribute">event handler IDL attribute</a> of type <code>Function</code> for an <span id="interface-alarmevent">alarm event</span>. An <code><a href="#alarmevent">AlarmEvent</a></code> is fired at this <a href="#event-handler">event handler</a> when an alarm goes off.
-
 <h3 id="interface-alarm"><span class="secno">4.3 </span>Interface <code title="">Alarm</code></h3>
 <p>The <code><a href="#alarm">Alarm</a></code> interface captures the properties of a registered alarm.
 
@@ -246,7 +250,7 @@ If there was no alarm with the given identifier, the implementation <em class="c
 
 <p>The <dfn id="alarm-id" title="Alarm-id"><code>id</code></dfn> attribute returns an identifier for the given <code><a href="#alarm">Alarm</a></code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain this identifier when a <code><a href="#alarm">Alarm</a></code> is added.
 
-<p>The <dfn id="alarm-date" title="Alarm-date"><code>date</code></dfn> attribute is a  <code>Date</code> object representing when the alarm is intended to trigger.
+<p>The <dfn id="alarm-date" title="Alarm-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when the alarm is intended to trigger.
 
 <p>The <dfn id="alarm-respecttimezone" title="Alarm-respectTimezone"><code>respectTimezone</code></dfn> attribute indicates if the timezone information of the <code>Date</code> object is ignored.
 
@@ -277,21 +281,10 @@ interface <dfn id="alarmrequest">AlarmRequest</dfn> : <a class="external" href="
 
 <p>The <dfn id="alarmrequest-onerror" title="AlarmRequest-onerror"><code>onerror</code></dfn> attribute is the <a href="#event-handler-idl-attribute">event handler IDL attribute</a> for the <code>error</code> event.
 
-<h3 id="interface-alarmevent-0"><span class="secno">4.5 </span>Interface <code title="AlarmEvent"><a href="#alarmevent">AlarmEvent</a></code></h3>
-<p>An <code title="AlarmEvent"><a href="#alarmevent">AlarmEvent</a></code> is fired when an alarm goes off.
+<h3 id="the-alarm-system-message"><span class="secno">4.5 </span>The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message</h3>
+<p>An <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> is fired when an alarm goes off. This event is originated from the system and will wake up the application if it is not currently running.
 
-<p>When this happens, the user agent <em class="ct">must</em> <a href="#queue-a-task">queue a task</a> to <a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">fire an event</a> with the name <code title="AlarmEvent"><a href="#alarmevent">alarm</a></code>, which does not bubble and is not cancelable, and which uses the <code><a href="#alarmevent">AlarmEvent</a></code> interface, at each <code><a href="#alarmmanager">AlarmManager</a></code> object that is affected.
-
-<pre class="idl">[Constructor(DOMString <var title="">type</var>, optional <a href="#alarmeventinit">AlarmEventInit</a> <var title="">eventInitDict</var>)]
-interface <dfn id="alarmevent">AlarmEvent</dfn> : <a class="external" href="http://dom.spec.whatwg.org/#event">Event</a> {
-  readonly attribute <a href="#alarm">Alarm</a> <a href="#alarmevent-alarm" title="AlarmEvent-alarm">alarm</a>;
-};
-
-dictionary <dfn id="alarmeventinit">AlarmEventInit</dfn> : <a class="external" href="http://dom.spec.whatwg.org/#eventinit">EventInit</a> {
-  <a href="#alarm">Alarm</a> alarm;
-};</pre>
-
-<p>The <dfn id="alarmevent-alarm" title="AlarmEvent-alarm"><code>alarm</code></dfn> attribute returns the alarm that went off.
+<p>The developer should set message handler for the <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> system message to listen for when alarms go off. The <code><a href="#alarm">Alarm</a></code> that was went off will be passed in argument to the system message callback.
 
 <h3 id="timezone-dst"><span class="secno">4.6 </span>Timezones and daylight savings</h3>
 <p><em>This section is non-normative.</em>
@@ -342,6 +335,9 @@ navigator.alarms.add(time, "respectTimezone");</pre>
 
 <dt id="refsHTML5">[HTML5]
 <dd><cite><a href="http://dev.w3.org/html5/spec/">HTML5</a></cite>, Ian Hickson. W3C.
+
+<dt id="refsRUNTIME">[RUNTIME]
+<dd><cite><a href="http://www.w3.org/TR/runtime">Runtime and Security Model for Web Applications</a></cite>, Mounir Lamouri and Ming Jin. W3C.
 
 <dt id="refsWEBIDL">[WEBIDL]
 <dd><cite><a href="http://dev.w3.org/2006/webapi/WebIDL/">Web IDL</a></cite>, Cameron McCormack. W3C.

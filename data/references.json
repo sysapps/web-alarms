@@ -325,6 +325,13 @@
     "authors" : ["Simon Perreault"],
     "publisher" : "IETF"
   },
+  "RUNTIME" :
+  {
+    "href" : "http://www.w3.org/TR/runtime",
+    "title" : "Runtime and Security Model for Web Applications",
+    "authors" : ["Mounir Lamouri", "Ming Jin"],
+    "publisher" : "W3C"
+  },
   "SELECTORS" : {
     "href" : "http://dev.w3.org/csswg/selectors4/",
     "title" : "Selectors Level 4",

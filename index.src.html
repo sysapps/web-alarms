@@ -124,11 +124,18 @@ request.onerror = function (e) {
 };
 </pre>
 
-<p>How to register a listener for an <span title="AlarmEvent">alarm event</span>?
-<pre>function trigger(e) {
-  alert("alarm fired at: " + e.alarm.date);
+<p>How to register a listener for an <code title="alarm-system-message">alarm</code> <span>system message</span>?
+<pre>function onAlarmFired(alarm) {
+  alert("alarm fired at: " + alarm.date);
 }
-navigator.alarms.addEventListener("alarm", trigger);</pre>
+navigator.setMessageHandler("alarm", onAlarmFired);
+</pre>
+
+<p>How to know in advance if there exists any pending <code title="alarm-system-message">alarm</code> <span>system message</span>?
+<pre>
+if (navigator.hasPendingMessages("alarm"))
+  alert("There is at least 1 pending 'alarm' system message.");
+</pre>
 </div>
 
 <h2 id="conformance">Conformance</h2>
@@ -148,6 +155,8 @@ navigator.alarms.addEventListener("alarm", trigger);</pre>
 <p>The terms <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers"> event handler</a></dfn>
 and <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handler-event-type"> event handler event types</a></dfn>
 are defined in <span data-anolis-ref>HTML5</span>.
+
+<p>The term <dfn><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in <span data-anolis-ref>RUNTIME</span>.
 
 <h2>Web Alarms API</h2>
 <p><em>This section is non-normative.</em>
@@ -173,16 +182,14 @@ are defined in <span data-anolis-ref>HTML5</span>.
 <p>The <dfn title="Navigator-alarms"><code>alarms</code></dfn> attribute provides the developer access to an <code>AlarmManager</code>.
 
 <h3>Interface <code title="">AlarmManager</code></h3>
-<p>The <code>AlarmManager</code> interface exposes methods to get, set or remove alarms. Alarms are application specific, so there is no way to see the alarms scheduled by other applications nor to modify them. Developers can use this interface to register event listeners to listen for when alarms trigger.
+<p>The <code>AlarmManager</code> interface exposes methods to get, set or remove alarms. Alarms are application specific, so there is no way to see the alarms scheduled by other applications nor to modify them. Developers should set a message handler for the <code title="alarm-system-message">alarm</code> <code>system message</code> to listen for when alarms trigger.
 
 <pre class="idl">enum <dfn>TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
-interface <dfn>AlarmManager</dfn> : <span data-anolis-spec=dom>EventTarget</span> {
+interface <dfn>AlarmManager</dfn> {
   <span>AlarmRequest</span> <span title="AlarmManager-getAll">getAll</span>();
   <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>respectTimezone</var>, optional any <var title>data</var>);
   <span>AlarmRequest</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
-
-  attribute EventHandler <span title="AlarmManager-onalarm">onalarm</span>;
 };</pre>
 
 <p>When invoked, the <dfn title="AlarmManager-getAll"><code>getAll()</code></dfn> method creates an <code>AlarmRequest</code> object, which, if successful, can be used to retrieve the <code>Alarm</code> objects corresponding to this application.
@@ -212,8 +219,6 @@ If there was no alarm with the given identifier, the implementation <em class="c
 <li>If any error is returned, the implementation <em class="ct">must</em> set the <code>error</code> attribute of the <code>AlarmRequest</code> to a <code>DOMError</code> whose name is <code>"UnknownError"</code>, and dispatch an <code>error</code> event at the request.</li>
 </ol>
 
-<p>The <dfn title="AlarmManager-onalarm"><code>onalarm</code></dfn> attribute is the <span>event handler IDL attribute</span> of type <code>Function</code> for an <span id="interface-alarmevent">alarm event</span>. An <code>AlarmEvent</code> is fired at this <span>event handler</span> when an alarm goes off.
-
 <h3>Interface <code title="">Alarm</code></h3>
 <p>The <code>Alarm</code> interface captures the properties of a registered alarm.
 
@@ -226,7 +231,7 @@ If there was no alarm with the given identifier, the implementation <em class="c
 
 <p>The <dfn title="Alarm-id"><code>id</code></dfn> attribute returns an identifier for the given <code>Alarm</code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain this identifier when a <code>Alarm</code> is added.
 
-<p>The <dfn title="Alarm-date"><code>date</code></dfn> attribute is a  <code>Date</code> object representing when the alarm is intended to trigger.
+<p>The <dfn title="Alarm-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when the alarm is intended to trigger.
 
 <p>The <dfn title="Alarm-respectTimezone"><code>respectTimezone</code></dfn> attribute indicates if the timezone information of the <code>Date</code> object is ignored.
 
@@ -258,21 +263,10 @@ interface <dfn>AlarmRequest</dfn> : <span data-anolis-spec=dom>EventTarget</span
 
 <p>The <dfn title="AlarmRequest-onerror"><code>onerror</code></dfn> attribute is the <span>event handler IDL attribute</span> for the <code>error</code> event.
 
-<h3>Interface <code title="AlarmEvent">AlarmEvent</code></h3>
-<p>An <code title="AlarmEvent">AlarmEvent</code> is fired when an alarm goes off.
+<h3>The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message</h3>
+<p>An <code title="alarm-system-message">alarm</code> <code>system message</code> is fired when an alarm goes off. This event is originated from the system and will wake up the application if it is not currently running.
 
-<p>When this happens, the user agent <em class="ct">must</em> <span>queue a task</span> to <span data-anolis-spec=dom title=concept-event-fire>fire an event</span> with the name <code title="AlarmEvent">alarm</code>, which does not bubble and is not cancelable, and which uses the <code>AlarmEvent</code> interface, at each <code>AlarmManager</code> object that is affected.
-
-<pre class="idl">[Constructor(DOMString <var title>type</var>, optional <span>AlarmEventInit</span> <var title>eventInitDict</var>)]
-interface <dfn>AlarmEvent</dfn> : <span data-anolis-spec=dom>Event</span> {
-  readonly attribute <span>Alarm</span> <span title="AlarmEvent-alarm">alarm</span>;
-};
-
-dictionary <dfn>AlarmEventInit</dfn> : <span data-anolis-spec=dom>EventInit</span> {
-  <span>Alarm</span> alarm;
-};</pre>
-
-<p>The <dfn title="AlarmEvent-alarm"><code>alarm</code></dfn> attribute returns the alarm that went off.
+<p>The developer should set message handler for the <code title="alarm-system-message">alarm</code> system message to listen for when alarms go off. The <code>Alarm</code> that was went off will be passed in argument to the system message callback.
 
 <h3 id="timezone-dst">Timezones and daylight savings</h3>
 <p><em>This section is non-normative.</em>
