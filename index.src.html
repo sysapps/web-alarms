@@ -210,16 +210,9 @@ interface <dfn>AlarmManager</dfn> {
 </ol></li>
 </ol>
 
-<p>The <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>respectTimezone</var>[, <var>data</var>])</code></dfn> method is used to register an alarm.
+<p>When invoked, the <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>respectTimezone</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
-<li>The first argument <code>date</code> is a <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object representing when the alarm will trigger.</li>
-<li>The second argument <code>respectTimezone</code> can be either <code>"respectTimezone"</code> or <code>"ignoreTimezone"</code> to specify if the user agent needs to ignore the timezone information of that <code>Date</code> object. When <code>"respectTimezone"</code> is passed, we will alert that application when that time happens in that timezone. See <a href="#timezone-dst">Timezones and daylight savings</a> section for examples.</li>
-<li>The third argument <code>data</code> can be optionally specified to pass the <span>JSON-serializable data</span> to be associated with the alarm.</li>
-</ol>
-
-<p>When invoked, the <span title="AlarmManager-add"><code>add</code></span> method <em class="ct">must</em> run the following steps:
-<ol>
-<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>.</li>
+<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>respectTimezone</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system must associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
 <li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
@@ -230,12 +223,12 @@ interface <dfn>AlarmManager</dfn> {
 <li>When the operation completed successfuly, run these substeps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
-<li>Let <em>a</em> be a new <code>Alarm</code> object.</li>
-<li>Set <em>a</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
-<li>Set <em>a</em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
-<li>Set <em>a</em>'s <code>respectTimezone</code> attribute to the <code>respectTimezone</code> argument.</li>
-<li>Set <em>a</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
-<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <em>a</em>.</li>
+<li>Let <em>alarm</em> be a new <code>Alarm</code> object.</li>
+<li>Set <em>alarm</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
+<li>Set <em>alarm</em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
+<li>Set <em>alarm</em>'s <code>respectTimezone</code> attribute to the <code>respectTimezone</code> argument.</li>
+<li>Set <em>alarm</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
+<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <em>alarm</em>.</li>
 <li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
 </ol></li>
 </ol>
