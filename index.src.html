@@ -168,7 +168,7 @@ are defined in <span data-anolis-ref>HTML5</span>.
 <li>The returned ID is unique (within the application origin) and can be used to specify and remove the added alarm.</li>
 <li>Web applications can pass a <span>JSON-serializable object</span> to describe more details about each alarm setting.</li>
 <li>Web applications can only access their own alarms.</li>
-<li>When the alarm goes off, an alarm event is fired.</li>
+<li>When the alarm goes off, an <code title="alarm-system-message">alarm</code> <code>system message</code> is sent to the application.</li>
 <li>All the alarms that have been added can be automatically restored after rebooting the system.</li>
 <li>Alarm API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the system from sleeping.</li>
 <li>Whenever the system clock or timezone is adjusted at run-time, all the saved alarms will be rescheduled.</li>
