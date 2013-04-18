@@ -444,6 +444,7 @@
     "eventinit": "eventinit",
     "eventlistener": "eventlistener",
     "eventtarget": "eventtarget",
+    "future": "future",
     "hierarchyrequesterror": "hierarchyrequesterror",
     "html document": "html-document",
     "html namespace": "html-namespace",

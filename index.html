@@ -35,7 +35,7 @@
 <div class="head">
 	<h1>Web Alarms API Specification</h1>
 	
-	<h2 class="no-num no-toc" id="editor-draft-—-18-april-2013">Editor Draft — 18 April 2013</h2>
+	<h2 class="no-num no-toc" id="editor-draft-—-19-april-2013">Editor Draft — 19 April 2013</h2>
 	
 	<dl>
 		<dt>This version:
@@ -84,12 +84,11 @@
    <li><a href="#interface-navigator"><span class="secno">4.1 </span>Interface <code title="">Navigator</code></a></li>
    <li><a href="#interface-alarmmanager"><span class="secno">4.2 </span>Interface <code title="">AlarmManager</code></a></li>
    <li><a href="#interface-alarm"><span class="secno">4.3 </span>Interface <code title="">Alarm</code></a></li>
-   <li><a href="#interface-alarmrequest"><span class="secno">4.4 </span>Interface <code title="">AlarmRequest</code></a></li>
-   <li><a href="#the-alarm-system-message"><span class="secno">4.5 </span>The <code title="alarm-system-message">alarm</code> system message</a></li>
-   <li><a href="#timezone-dst"><span class="secno">4.6 </span>Timezones and daylight savings</a>
+   <li><a href="#the-alarm-system-message"><span class="secno">4.4 </span>The <code title="alarm-system-message">alarm</code> system message</a></li>
+   <li><a href="#timezone-dst"><span class="secno">4.5 </span>Timezones and daylight savings</a>
     <ol class="toc">
-     <li><a href="#crossing-daylight-savings-time-boundaries"><span class="secno">4.6.1 </span>Crossing daylight savings time boundaries</a></li>
-     <li><a href="#crossing-timezone-boundaries"><span class="secno">4.6.2 </span>Crossing timezone boundaries</a></ol></ol></li>
+     <li><a href="#crossing-daylight-savings-time-boundaries"><span class="secno">4.5.1 </span>Crossing daylight savings time boundaries</a></li>
+     <li><a href="#crossing-timezone-boundaries"><span class="secno">4.5.2 </span>Crossing timezone boundaries</a></ol></ol></li>
  <li><a class="no-num" href="#references">References</a></li>
  <li><a class="no-num" href="#acknowledgments">Acknowledgments</a></ol>
 <!--end-toc-->
@@ -169,6 +168,8 @@ navigator.setMessageHandler("alarm", onAlarmFired);
 
 <p>The <dfn id="eventhandler"><code><a href="http://dev.w3.org/html5/spec/webappapis.html#eventhandler">EventHandler</a></code></dfn> interface represents a callback used for handling events as defined in <a href="#refsHTML5">[HTML5]</a>.
 
+<p>The <dfn id="future"><code><a href="http://dom.spec.whatwg.org/#future">Future</a></code></dfn> interface provides asynchronous access to the result of an operation that is ongoing, has yet to start, or has completed, as defined in <a href="#refsDOM">[DOM]</a>.
+
 <p>The concepts <dfn id="queue-a-task"><a href="http://dev.w3.org/html5/spec/webappapis.html#queue-a-task">queue a task</a></dfn>, <dfn id="event-handler-idl-attribute"><a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-handler-idl-attributes">event handler IDL attribute</a></dfn> and <dfn id="fire-a-simple-event"><a href="http://dev.w3.org/html5/spec/webappapis.html#fire-a-simple-event"> fire a simple event</a></dfn> are defined in <a href="#refsHTML5">[HTML5]</a>.
 
 <p>The terms <dfn id="event-handler"><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers"> event handler</a></dfn>
@@ -206,86 +207,78 @@ are defined in <a href="#refsHTML5">[HTML5]</a>.
 <pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
 interface <dfn id="alarmmanager">AlarmManager</dfn> {
-  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms">getPendingAlarms</a>();
-  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
-  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
-  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-clear" title="AlarmManager-clear">clear</a>();
+  <a href="#future">Future</a> <a href="#alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms">getPendingAlarms</a>();
+  <a href="#future">Future</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
+  <a href="#future">Future</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
+  <a href="#future">Future</a> <a href="#alarmmanager-clear" title="AlarmManager-clear">clear</a>();
 };</pre>
 
 <p>When invoked, the <dfn id="alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to retrieve the alarms that were registered by the current application and that did not go off yet.</li>
-<li>Create a new <code><a href="#alarmrequest">AlarmRequest</a></code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
+<li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em><a href="#future">future</a></em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
-<li>Set the <code>result</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to an array containing the <code><a href="#alarm">Alarm</a></code> objects that were retrieved.</li>
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>alarms</em> be a new array containing the <code><a href="#alarm">Alarm</a></code> objects that were retrieved.</li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>alarms</em> as <code>value</code> argument.</li>
 </ol></li>
 </ol>
 
 <p>When invoked, the <dfn id="alarmmanager-add" title="AlarmManager-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code><a href="#timezonedirective">timezoneDirective</a></code> argument, the system will honor the timezone information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</span></li>
-<li>Create a new <code><a href="#alarmrequest">AlarmRequest</a></code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
+<li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em><a href="#future">future</a></em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>If the <code>date</code> argument is in the past, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>.</li>
-<li>If the <code>data</code> argument exceeds an implementation-dependent limit, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"QuotaExceededError"</code>.</li>
-<li>Otherwise, set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.</li>
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"InvalidStateError"</code> if the <code>date</code> argument is in the past, <code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds an implementation-dependent size limit, and <code>"UnknownError"</code> otherwise.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
 <li>Let <em><a href="#alarm">alarm</a></em> be a new <code><a href="#alarm">Alarm</a></code> object.</li>
 <li>Set <em><a href="#alarm">alarm</a></em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
 <li>Set <em><a href="#alarm">alarm</a></em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
 <li>Set <em><a href="#alarm">alarm</a></em>'s <code><a href="#timezonedirective">timezoneDirective</a></code> attribute to the <code><a href="#timezonedirective">timezoneDirective</a></code> argument.</li>
 <li>Set <em><a href="#alarm">alarm</a></em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
-<li>Set the <code>result</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <em><a href="#alarm">alarm</a></em>.</li>
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
-</ol></li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em><a href="#alarm">alarm</a></em> as <code>value</code> argument.</ol></li>
 </ol>
 
 <p>When invoked, the <dfn id="alarmmanager-remove" title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to unregister the alarm with the given unique <code>alarmId</code> identifier.</li>
+<li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em><a href="#future">future</a></em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
-<li>Set the <code>result</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>removed</em> be a boolean value.</li>
+<li>Set <em>removed</em> to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>removed</em> as <code>value</code> argument.</li>
 </ol></li>
 </ol>
 
 <p>When invoked, the <dfn id="alarmmanager-clear" title="AlarmManager-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to unregister all pending alarms set by the current application.</li>
+<li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em><a href="#future">future</a></em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
-<ol>
-<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
-<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
-</ol></li>
+<li>When the operation completes successfully, call <em>resolver</em>'s <code>accept(value)</code> method with no argument.</li>
 </ol>
 
 <h3 id="interface-alarm"><span class="secno">4.3 </span>Interface <code title="">Alarm</code></h3>
@@ -306,41 +299,16 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 
 <p>The <dfn id="alarm-data" title="Alarm-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable data</span> associated with the alarm.
 
-<h3 id="interface-alarmrequest"><span class="secno">4.4 </span>Interface <code title="">AlarmRequest</code></h3>
-<p>An <code><a href="#alarmrequest">AlarmRequest</a></code> object represents an ongoing operation; it notifies the application when the operation completes using an <a href="#event-handler-idl-attribute">event handler IDL attribute</a> (<code>onsuccess</code>), as well as a reference to the operation's result. A DOM method that initiates an ongoing operation returns an <code><a href="#alarmrequest">AlarmRequest</a></code> object that one can use to monitor the progress of that operation.
-
-<pre class="idl">enum <dfn id="alarmreadystate">AlarmReadyState</dfn> { "pending", "done" };
-interface <dfn id="alarmrequest">AlarmRequest</dfn> : <a class="external" href="http://dom.spec.whatwg.org/#eventtarget">EventTarget</a> {
-  readonly attribute <a href="#alarmreadystate">AlarmReadyState</a> <a href="#alarmrequest-readystate" title="AlarmRequest-readyState">readyState</a>;
-
-  readonly attribute any <a href="#alarmrequest-result" title="AlarmRequest-result">result</a>;
-  readonly attribute <a class="external" href="http://dom.spec.whatwg.org/#domerror">DOMError</a>? <a href="#alarmrequest-error" title="AlarmRequest-error">error</a>;
-
-  attribute EventHandler <a href="#alarmrequest-onsuccess" title="AlarmRequest-onsuccess">onsuccess</a>;
-  attribute EventHandler <a href="#alarmrequest-onerror" title="AlarmRequest-onerror">onerror</a>;
-};
-</pre>
-
-<p>The <dfn id="alarmrequest-readystate" title="AlarmRequest-readyState"><code>readyState</code></dfn> attribute returns the state of this <code><a href="#alarmrequest">AlarmRequest</a></code>.
-
-<p>The <dfn id="alarmrequest-result" title="AlarmRequest-result"><code>result</code></dfn> attribute returns the result of this <code><a href="#alarmrequest">AlarmRequest</a></code> (if any), once the <code title="AlarmRequest-readyState"><a href="#alarmrequest-readystate">readyState</a></code> is <code>"done"</code> and the <code>success</code> event is fired.
-
-<p>The <dfn id="alarmrequest-error" title="AlarmRequest-error"><code>error</code></dfn> attribute returns a DOMError error that occurred for this <code><a href="#alarmrequest">AlarmRequest</a></code> (if any); otherwise it returns <code>null</code>. This attribute is populated when the <code>error</code> event is fired.</p>
-
-<p>The <dfn id="alarmrequest-onsuccess" title="AlarmRequest-onsuccess"><code>onsuccess</code></dfn> attribute is the <a href="#event-handler-idl-attribute">event handler IDL attribute</a> for the <code>success</code> event.
-
-<p>The <dfn id="alarmrequest-onerror" title="AlarmRequest-onerror"><code>onerror</code></dfn> attribute is the <a href="#event-handler-idl-attribute">event handler IDL attribute</a> for the <code>error</code> event.
-
-<h3 id="the-alarm-system-message"><span class="secno">4.5 </span>The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message</h3>
+<h3 id="the-alarm-system-message"><span class="secno">4.4 </span>The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message</h3>
 <p>An <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> is fired when an alarm goes off. This event is originated from the system and will wake up the application if it is not currently running.
 
 <p>The developer should set message handler for the <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> system message to listen for when alarms go off. The <code><a href="#alarm">Alarm</a></code> that was went off will be passed in argument to the system message callback.
 
-<h3 id="timezone-dst"><span class="secno">4.6 </span>Timezones and daylight savings</h3>
+<h3 id="timezone-dst"><span class="secno">4.5 </span>Timezones and daylight savings</h3>
 <p><em>This section is non-normative.</em>
 <p>The implementation needs to consider timezones and respect daylight savings. We will provide examples in this section to clarify how non-obvious cases should be handled.
 
-<h4 id="crossing-daylight-savings-time-boundaries"><span class="secno">4.6.1 </span>Crossing daylight savings time boundaries</h4>
+<h4 id="crossing-daylight-savings-time-boundaries"><span class="secno">4.5.1 </span>Crossing daylight savings time boundaries</h4>
 <p><em>This section is non-normative.</em>
 <div class="example">
 <p>Let's consider an alarm on March 10, 2013 at 2:00am in a timezone where daylight savings time starts at that time (e.g. in San Francisco, CA):
@@ -358,7 +326,7 @@ navigator.alarms.add(time, "ignoreTimezone");</pre>
 <p>In San Francisco, CA, clocks are turned backward 1 hour on Sunday, November 3, 2013 at 2:00am. In this case, the alarm fires <em>once</em> the first time that the device is running and the local time is past 1:10am on November 3, 2013. After that the alarm is deleted.
 </div>
 
-<h4 id="crossing-timezone-boundaries"><span class="secno">4.6.2 </span>Crossing timezone boundaries</h4>
+<h4 id="crossing-timezone-boundaries"><span class="secno">4.5.2 </span>Crossing timezone boundaries</h4>
 <p><em>This section is non-normative.</em>
 <div class="example">
 <p>Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with timezoneDirective argument set to "ignoreTimezone":
@@ -379,6 +347,9 @@ navigator.alarms.add(time, "respectTimezone");</pre>
 <h2 class="no-num" id="references">References</h2>
 <div id="anolis-references"><dl><dt id="refsB2G-ALARM">[B2G-ALARM]
 <dd><cite><a href="https://wiki.mozilla.org/WebAPI/AlarmAPI">B2G Alarm API Specification</a></cite>, Mounir Lamouri, Kan-Ru Chen and Jonas Sicking. Mozilla.
+
+<dt id="refsDOM">[DOM]
+<dd><cite><a href="http://dom.spec.whatwg.org/">DOM</a></cite>, Anne van Kesteren, Aryeh Gregor and Ms2ger. WHATWG.
 
 <dt id="refsECMASCRIPT">[ECMASCRIPT]
 <dd><cite><a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">ECMAScript Language Specification</a></cite>. ECMA.
