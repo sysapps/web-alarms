@@ -274,9 +274,9 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 
 <pre class="idl">interface <dfn id="alarm">Alarm</dfn> {
   readonly attribute DOMString <a href="#alarm-id" title="Alarm-id">id</a>;
-  attribute Date <a href="#alarm-date" title="Alarm-date">date</a>;
-  attribute <a href="#timezonedirective">TimezoneDirective</a> <a href="#alarm-respecttimezone" title="Alarm-respectTimezone">respectTimezone</a>;
-  attribute any <a href="#alarm-data" title="Alarm-data">data</a>;
+  readonly attribute Date <a href="#alarm-date" title="Alarm-date">date</a>;
+  readonly attribute <a href="#timezonedirective">TimezoneDirective</a> <a href="#alarm-respecttimezone" title="Alarm-respectTimezone">respectTimezone</a>;
+  readonly attribute any <a href="#alarm-data" title="Alarm-data">data</a>;
 };</pre>
 
 <p>The <dfn id="alarm-id" title="Alarm-id"><code>id</code></dfn> attribute returns an identifier for the given <code><a href="#alarm">Alarm</a></code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain this identifier when a <code><a href="#alarm">Alarm</a></code> is added.
