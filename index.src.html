@@ -105,8 +105,8 @@ request.onerror = function (e) {
    alert("Could not set the alarm, sorry. Error " + e);
 };</pre>
 
-<p>How to get all the alarms that have been set?
-<pre>var request = navigator.alarms.getAll();
+<p>How to get all the alarms that have been set and did not go off yet?
+<pre>var request = navigator.alarms.getPendingAlarms();
 request.onsuccess = function (e) {
   alert("There are " + e.target.result.length + " alarms set."));
 };
@@ -187,12 +187,12 @@ are defined in <span data-anolis-ref>HTML5</span>.
 <pre class="idl">enum <dfn>TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
 interface <dfn>AlarmManager</dfn> {
-  <span>AlarmRequest</span> <span title="AlarmManager-getAll">getAll</span>();
+  <span>AlarmRequest</span> <span title="AlarmManager-getPendingAlarms">getPendingAlarms</span>();
   <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>timezoneDirective</var>, optional any <var title>data</var>);
   <span>AlarmRequest</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
 };</pre>
 
-<p>When invoked, the <dfn title="AlarmManager-getAll"><code>getAll()</code></dfn> method <em class="ct">must</em> run the following steps:
+<p>When invoked, the <dfn title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to retrieve the alarms that were registered by the current application and that did not go off yet.</li>
 <li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
