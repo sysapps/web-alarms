@@ -218,7 +218,7 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
+<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
 <li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
 </ol></li>
 <li>When the operation completed successfuly, run these substeps:
@@ -236,9 +236,9 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>If the <code>date</code> argument is in the past, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>.</li>
-<li>If the <code>data</code> argument exceeds an implementation-dependent limit, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"QuotaExceededError"</code>.</li>
-<li>Otherwise, set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.</li>
+<li>If the <code>date</code> argument is in the past, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>.</li>
+<li>If the <code>data</code> argument exceeds an implementation-dependent limit, then set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"QuotaExceededError"</code>.</li>
+<li>Otherwise, set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.</li>
 <li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
 </ol></li>
 <li>When the operation completed successfuly, run these substeps:
@@ -260,7 +260,7 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
+<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
 <li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
 </ol></li>
 <li>When the operation completed successfuly, run these substeps:
