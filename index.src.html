@@ -217,7 +217,9 @@ interface <dfn>AlarmManager</dfn> {
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code> if the <code>date</code> argument is in the past, and <code>"UnknownError"</code> otherwise.
+<li>If the <code>date</code> argument is in the past, then set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>.</li>
+<li>If the <code>data</code> argument exceeds an implementation-dependent limit, then set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"QuotaExceededError"</code>.</li>
+<li>Otherwise, set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.</li>
 <li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
 </ol></li>
 <li>When the operation completed successfuly, run these substeps:
