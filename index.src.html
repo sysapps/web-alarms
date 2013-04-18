@@ -68,7 +68,7 @@
 
 <h2 class="no-num no-toc" id="specabstract">Abstract</h2>
 
-<p>This specification defines a system level API to provide access to the device alarm settings, which can schedule a notification or for an application to be started at a specific time. For example, some applications like alarm-clock, calendar or auto-update might need to utilize the Alarm API to trigger particular device behaviors at specified time points. 
+<p>This specification defines an API to schedule an alarm at a specified time. When the alarm goes off, the application that set the alarm will get notified via a system message. If the application is not running when the alarm is triggered, the system message will cause the application will be launched. Applications such as an alarm clock or an auto-updater may utilize this API to perform some action at a specified time.
 
 <h2 class="no-num no-toc" id="toc">Table of Contents</h2>
 
