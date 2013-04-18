@@ -190,6 +190,7 @@ interface <dfn>AlarmManager</dfn> {
   <span>AlarmRequest</span> <span title="AlarmManager-getPendingAlarms">getPendingAlarms</span>();
   <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>timezoneDirective</var>, optional any <var title>data</var>);
   <span>AlarmRequest</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
+  <span>AlarmRequest</span> <span title="AlarmManager-clear">clear</span>();
 };</pre>
 
 <p>When invoked, the <dfn title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
@@ -246,6 +247,22 @@ interface <dfn>AlarmManager</dfn> {
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
 <li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
+<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
+</ol></li>
+</ol>
+
+<p>When invoked, the <dfn title="AlarmManager-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run the following steps:
+<ol>
+<li>Make a request to the system to unregister all pending alarms set by the current application.</li>
+<li>If an error occurs, run these substeps and then terminate these steps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
+<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
+<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+</ol></li>
+<li>When the operation completed successfuly, run these substeps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
 <li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
 </ol></li>
 </ol>

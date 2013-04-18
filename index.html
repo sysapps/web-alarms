@@ -209,6 +209,7 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms">getPendingAlarms</a>();
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
+  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-clear" title="AlarmManager-clear">clear</a>();
 };</pre>
 
 <p>When invoked, the <dfn id="alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
@@ -265,6 +266,22 @@ interface <dfn id="alarmmanager">AlarmManager</dfn> {
 <ol>
 <li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
 <li>Set the <code>result</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
+<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+</ol></li>
+</ol>
+
+<p>When invoked, the <dfn id="alarmmanager-clear" title="AlarmManager-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run the following steps:
+<ol>
+<li>Make a request to the system to unregister all pending alarms set by the current application.</li>
+<li>If an error occurs, run these substeps and then terminate these steps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.
+<li>Set the <code>error</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
+<li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>error</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
+</ol></li>
+<li>When the operation completed successfuly, run these substeps:
+<ol>
+<li>Set the <code>readyState</code> attribute of the <code><a href="#alarmrequest">AlarmRequest</a></code> object to <code>"done"</code>.</li>
 <li><a class="external" href="http://dom.spec.whatwg.org/#concept-event-fire" title="concept-event-fire">Fire an event</a> named <code>success</code> at the <code><a href="#alarmrequest">AlarmRequest</a></code> object.</li>
 </ol></li>
 </ol>
