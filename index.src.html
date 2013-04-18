@@ -188,7 +188,7 @@ are defined in <span data-anolis-ref>HTML5</span>.
 
 interface <dfn>AlarmManager</dfn> {
   <span>AlarmRequest</span> <span title="AlarmManager-getAll">getAll</span>();
-  <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>respectTimezone</var>, optional any <var title>data</var>);
+  <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>timezoneDirective</var>, optional any <var title>data</var>);
   <span>AlarmRequest</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
 };</pre>
 
@@ -210,9 +210,9 @@ interface <dfn>AlarmManager</dfn> {
 </ol></li>
 </ol>
 
-<p>When invoked, the <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>respectTimezone</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
+<p>When invoked, the <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
-<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>respectTimezone</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
+<li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>timezoneDirective</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
 <li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
@@ -226,7 +226,7 @@ interface <dfn>AlarmManager</dfn> {
 <li>Let <em>alarm</em> be a new <code>Alarm</code> object.</li>
 <li>Set <em>alarm</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
 <li>Set <em>alarm</em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
-<li>Set <em>alarm</em>'s <code>respectTimezone</code> attribute to the <code>respectTimezone</code> argument.</li>
+<li>Set <em>alarm</em>'s <code>timezoneDirective</code> attribute to the <code>timezoneDirective</code> argument.</li>
 <li>Set <em>alarm</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
 <li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <em>alarm</em>.</li>
 <li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
@@ -256,7 +256,7 @@ interface <dfn>AlarmManager</dfn> {
 <pre class="idl">interface <dfn>Alarm</dfn> {
   readonly attribute DOMString <span title="Alarm-id">id</span>;
   readonly attribute Date <span title="Alarm-date">date</span>;
-  readonly attribute <span>TimezoneDirective</span> <span title="Alarm-respectTimezone">respectTimezone</span>;
+  readonly attribute <span>TimezoneDirective</span> <span title="Alarm-timezoneDirective">timezoneDirective</span>;
   readonly attribute any <span title="Alarm-data">data</span>;
 };</pre>
 
@@ -264,7 +264,7 @@ interface <dfn>AlarmManager</dfn> {
 
 <p>The <dfn title="Alarm-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when the alarm is intended to trigger.
 
-<p>The <dfn title="Alarm-respectTimezone"><code>respectTimezone</code></dfn> attribute indicates if the timezone information of the <code>Date</code> object is ignored.
+<p>The <dfn title="Alarm-timezoneDirective"><code>timezoneDirective</code></dfn> attribute indicates if the timezone information of the <code>Date</code> object is ignored.
 
 <p>The <dfn title="Alarm-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable data</span> associated with the alarm.
 
@@ -324,14 +324,14 @@ navigator.alarms.add(time, "ignoreTimezone");</pre>
 <h4>Crossing timezone boundaries</h4>
 <p><em>This section is non-normative.</em>
 <div class="example">
-<p>Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with respectTimezone argument set to "ignoreTimezone":
+<p>Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with timezoneDirective argument set to "ignoreTimezone":
 <pre>// User is currently in Pacific Standard Time (PST)
 var time = new Date(2013, 0, 21, 7, 0, 00);
 navigator.alarms.add(time, "ignoreTimezone"); </pre>
 
 <p>If the user is traveling to New York on that day and currently in Eastern Standard Time (EST), the alarm needs to fire on January 21, 2013 when it is 7:00am in Eastern Standard Time (EST).
 
-<p>Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with respectTimezone argument set to "respectTimezone":
+<p>Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with timezoneDirective argument set to "respectTimezone":
 <pre>// User is currently in Pacific Standard Time (PST)
 var time = new Date(2013, 0, 21, 7, 0, 00); 
 navigator.alarms.add(time, "respectTimezone");</pre>
