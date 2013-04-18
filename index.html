@@ -125,8 +125,8 @@ request.onerror = function (e) {
    alert("Could not set the alarm, sorry. Error " + e);
 };</pre>
 
-<p>How to get all the alarms that have been set?
-<pre>var request = navigator.alarms.getAll();
+<p>How to get all the alarms that have been set and did not go off yet?
+<pre>var request = navigator.alarms.getPendingAlarms();
 request.onsuccess = function (e) {
   alert("There are " + e.target.result.length + " alarms set."));
 };
@@ -206,12 +206,12 @@ are defined in <a href="#refsHTML5">[HTML5]</a>.
 <pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
 interface <dfn id="alarmmanager">AlarmManager</dfn> {
-  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-getall" title="AlarmManager-getAll">getAll</a>();
+  <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms">getPendingAlarms</a>();
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
   <a href="#alarmrequest">AlarmRequest</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
 };</pre>
 
-<p>When invoked, the <dfn id="alarmmanager-getall" title="AlarmManager-getAll"><code>getAll()</code></dfn> method <em class="ct">must</em> run the following steps:
+<p>When invoked, the <dfn id="alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to retrieve the alarms that were registered by the current application and that did not go off yet.</li>
 <li>Create a new <code><a href="#alarmrequest">AlarmRequest</a></code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
