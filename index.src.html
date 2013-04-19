@@ -150,6 +150,8 @@ if (navigator.hasPendingMessages("alarm"))
 
 <p>The <dfn><code><a href="http://dev.w3.org/html5/spec/webappapis.html#eventhandler">EventHandler</a></code></dfn> interface represents a callback used for handling events as defined in <span data-anolis-ref>HTML5</span>.
 
+<p>The <dfn><code><a href="http://dom.spec.whatwg.org/#future">Future</a></code></dfn> interface provides asynchronous access to the result of an operation that is ongoing, has yet to start, or has completed, as defined in <span data-anolis-ref>DOM</span>.
+
 <p>The concepts <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#queue-a-task">queue a task</a></dfn>, <dfn><a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-handler-idl-attributes">event handler IDL attribute</a></dfn> and <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#fire-a-simple-event"> fire a simple event</a></dfn> are defined in <span data-anolis-ref>HTML5</span>.
 
 <p>The terms <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers"> event handler</a></dfn>
@@ -187,86 +189,78 @@ are defined in <span data-anolis-ref>HTML5</span>.
 <pre class="idl">enum <dfn>TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
 interface <dfn>AlarmManager</dfn> {
-  <span>AlarmRequest</span> <span title="AlarmManager-getPendingAlarms">getPendingAlarms</span>();
-  <span>AlarmRequest</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>timezoneDirective</var>, optional any <var title>data</var>);
-  <span>AlarmRequest</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
-  <span>AlarmRequest</span> <span title="AlarmManager-clear">clear</span>();
+  <span>Future</span> <span title="AlarmManager-getPendingAlarms">getPendingAlarms</span>();
+  <span>Future</span> <span title="AlarmManager-add">add</span>(Date <var title>date</var>, <span>TimezoneDirective</span> <var title>timezoneDirective</var>, optional any <var title>data</var>);
+  <span>Future</span> <span title="AlarmManager-remove">remove</span>(DOMString <var title>alarmId</var>);
+  <span>Future</span> <span title="AlarmManager-clear">clear</span>();
 };</pre>
 
 <p>When invoked, the <dfn title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to retrieve the alarms that were registered by the current application and that did not go off yet.</li>
-<li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
+<li>Let <em>future</em> be a new <code>Future</code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em>future</em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
-<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to an array containing the <code>Alarm</code> objects that were retrieved.</li>
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>alarms</em> be a new array containing the <code>Alarm</code> objects that were retrieved.</li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>alarms</em> as <code>value</code> argument.</li>
 </ol></li>
 </ol>
 
 <p>When invoked, the <dfn title="AlarmManager-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[, <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to register a new alarm for the current application that will trigger at the given <code>date</code>. Depending on the <code>timezoneDirective</code> argument, the system will honor the timezone information of that <span data-anolis-ref>ECMASCRIPT</span> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</li>
-<li>Create a new <code>AlarmRequest</code> object, set its <code>readyState</code> attribute to <code>"processing"</code>, and return it to the caller.</li>
+<li>Let <em>future</em> be a new <code>Future</code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em>future</em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
-<li>If the <code>date</code> argument is in the past, then set the <code>error</code> attribute of the <code>AlarmRequest</code> object to a <code>DOMError</code> whose name is <code>"InvalidStateError"</code>.</li>
-<li>If the <code>data</code> argument exceeds an implementation-dependent limit, then set the <code>error</code> attribute of the <code>AlarmRequest</code> object to a <code>DOMError</code> whose name is <code>"QuotaExceededError"</code>.</li>
-<li>Otherwise, set the <code>error</code> attribute of the <code>AlarmRequest</code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.</li>
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"InvalidStateError"</code> if the <code>date</code> argument is in the past, <code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds an implementation-dependent size limit, and <code>"UnknownError"</code> otherwise.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
 <li>Let <em>alarm</em> be a new <code>Alarm</code> object.</li>
 <li>Set <em>alarm</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly registered alarm.</li>
 <li>Set <em>alarm</em>'s <code>date</code> attribute to the <code>date</code> argument.</li>
 <li>Set <em>alarm</em>'s <code>timezoneDirective</code> attribute to the <code>timezoneDirective</code> argument.</li>
 <li>Set <em>alarm</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</li>
-<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <em>alarm</em>.</li>
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
-</ol></li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>alarm</em> as <code>value</code> argument.</li></ol></li>
 </ol>
 
 <p>When invoked, the <dfn title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to unregister the alarm with the given unique <code>alarmId</code> identifier.</li>
+<li>Let <em>future</em> be a new <code>Future</code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em>future</em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
+<li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
-<li>Set the <code>result</code> attribute of the <code>AlarmRequest</code> object to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>removed</em> be a boolean value.</li>
+<li>Set <em>removed</em> to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no alarm with the given identifier.</li>
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>removed</em> as <code>value</code> argument.</li>
 </ol></li>
 </ol>
 
 <p>When invoked, the <dfn title="AlarmManager-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run the following steps:
 <ol>
 <li>Make a request to the system to unregister all pending alarms set by the current application.</li>
+<li>Let <em>future</em> be a new <code>Future</code> object and <em>resolver</em> its associated resolver.</li>
+<li>Return <em>future</em>.</li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.
-<li>Set the <code>error</code> attribute of the <code>AlarmRequest</code> object to to a <code>DOMError</code> whose name is <code>"UnknownError"</code>.
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>error</code> at the <code>AlarmRequest</code> object.</li>
+<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</li>
+<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.</li>
 </ol></li>
-<li>When the operation completed successfuly, run these substeps:
-<ol>
-<li>Set the <code>readyState</code> attribute of the <code>AlarmRequest</code> object to <code>"done"</code>.</li>
-<li><span data-anolis-spec=dom title=concept-event-fire>Fire an event</span> named <code>success</code> at the <code>AlarmRequest</code> object.</li>
-</ol></li>
+<li>When the operation completes successfully, call <em>resolver</em>'s <code>accept(value)</code> method with no argument.</li>
 </ol>
 
 <h3>Interface <code title="">Alarm</code></h3>
@@ -286,32 +280,6 @@ interface <dfn>AlarmManager</dfn> {
 <p>The <dfn title="Alarm-timezoneDirective"><code>timezoneDirective</code></dfn> attribute indicates if the timezone information of the <code>Date</code> object is ignored.
 
 <p>The <dfn title="Alarm-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable data</span> associated with the alarm.
-
-<h3>Interface <code title="">AlarmRequest</code></h3>
-<p>An <code>AlarmRequest</code> object represents an ongoing operation; it notifies the application when the operation completes using an <span>event handler IDL attribute</span> (<code>onsuccess</code>), as well as a reference to the operation's result. A DOM method that initiates an ongoing operation returns an <code>AlarmRequest</code> object that one can use to monitor the progress of that operation.
-
-<pre class="idl">
-enum <dfn>AlarmReadyState</dfn> { "pending", "done" };
-interface <dfn>AlarmRequest</dfn> : <span data-anolis-spec=dom>EventTarget</span> {
-  readonly attribute <span>AlarmReadyState</span> <span title="AlarmRequest-readyState">readyState</span>;
-
-  readonly attribute any <span title="AlarmRequest-result">result</span>;
-  readonly attribute <span data-anolis-spec=dom>DOMError</span>? <span title="AlarmRequest-error">error</span>;
-
-  attribute EventHandler <span title="AlarmRequest-onsuccess">onsuccess</span>;
-  attribute EventHandler <span title="AlarmRequest-onerror">onerror</span>;
-};
-</pre>
-
-<p>The <dfn title="AlarmRequest-readyState"><code>readyState</code></dfn> attribute returns the state of this <code>AlarmRequest</code>.
-
-<p>The <dfn title="AlarmRequest-result"><code>result</code></dfn> attribute returns the result of this <code>AlarmRequest</code> (if any), once the <code title="AlarmRequest-readyState">readyState</code> is <code>"done"</code> and the <code>success</code> event is fired.
-
-<p>The <dfn title="AlarmRequest-error"><code>error</code></dfn> attribute returns a DOMError error that occurred for this <code>AlarmRequest</code> (if any); otherwise it returns <code>null</code>. This attribute is populated when the <code>error</code> event is fired.</p>
-
-<p>The <dfn title="AlarmRequest-onsuccess"><code>onsuccess</code></dfn> attribute is the <span>event handler IDL attribute</span> for the <code>success</code> event.
-
-<p>The <dfn title="AlarmRequest-onerror"><code>onerror</code></dfn> attribute is the <span>event handler IDL attribute</span> for the <code>error</code> event.
 
 <h3>The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message</h3>
 <p>An <code title="alarm-system-message">alarm</code> <code>system message</code> is fired when an alarm goes off. This event is originated from the system and will wake up the application if it is not currently running.
