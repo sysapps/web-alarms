@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <title>
-Web Alarms API Specification
+Task Scheduler API Specification
 </title>
 <style type="text/css">
    pre.idl { border:solid thin; background:#eee; color:#000; padding:0.5em }
@@ -36,11 +36,11 @@ Web Alarms API Specification
 <div class="head">
 <h1>
 
-Web Alarms API Specification
+Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-9-may-2013">
-Editor Draft — 9 May 2013
+<h2 class="no-num no-toc" id="editor-draft-—-21-may-2013">
+Editor Draft — 21 May 2013
 </h2>
 <dl>
 <dt>
@@ -95,9 +95,9 @@ Co., Ltd</a></span>, <span class="email"><a href="mailto:ch.dumez@sisa.samsung.c
 Abstract
 </h2>
 <p>
-This specification defines an API to schedule an alarm at a specified time. When the alarm goes off, the application
-that set the alarm will get notified via a system message. If the application is not running when the alarm is
-triggered, the system message will cause the application will be launched. Applications such as an alarm clock or an
+This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
+application that scheduled the task will be notified via a system message. If the application is not running when this
+happens, the system message will cause the application will be launched. Applications such as an alarm clock or an
 auto-updater may utilize this API to perform some action at a specified time.
 </p>
 <h2 class="no-num no-toc" id="toc">
@@ -114,21 +114,21 @@ Conformance
  <li><a href="#terminology"><span class="secno">3 </span>
 Terminology
 </a></li>
- <li><a href="#web-alarms-api"><span class="secno">4 </span>
-Web Alarms API
+ <li><a href="#task-scheduler-api"><span class="secno">4 </span>
+Task Scheduler API
 </a>
   <ol class="toc">
    <li><a href="#interface-navigator"><span class="secno">4.1 </span>
 Interface <code title="">Navigator</code>
 </a></li>
-   <li><a href="#interface-alarmmanager"><span class="secno">4.2 </span>
-Interface <code title="">AlarmManager</code>
+   <li><a href="#interface-taskscheduler"><span class="secno">4.2 </span>
+Interface <code title="">TaskScheduler</code>
 </a></li>
-   <li><a href="#interface-alarm"><span class="secno">4.3 </span>
-<span>Interface <code title="">Alarm</code></span>
+   <li><a href="#interface-scheduledtask"><span class="secno">4.3 </span>
+<span>Interface <code title="">ScheduledTask</code></span>
 </a></li>
-   <li><a href="#the-alarm-system-message"><span class="secno">4.4 </span>
-The <code title="alarm-system-message">alarm</code> system message
+   <li><a href="#the-task-system-message"><span class="secno">4.4 </span>
+The <code title="task-system-message">task</code> system message
 </a></li>
    <li><a href="#timezone-dst"><span class="secno">4.5 </span>
 Timezones and daylight savings
@@ -155,17 +155,17 @@ Introduction
 </p>
 <div class="example">
 <p>
-Example use of the Alarm API for adding, getting and removing and listening to alarms in the device:
+Example use of the ScheduledTask API for adding, getting and removing and listening for the alarm clock use cases:
 </p>
 <p>
 How to add an alarm the ignores timezone information?
 </p>
 <pre>var date = new Date("May 15, 2012 16:20:00");
-var request = navigator.alarms.add(date, "ignoreTimezone", {
+var request = navigator.taskScheduler.add(date, "ignoreTimezone", {
     message: "Your soup is ready!"
 });
 request.onsuccess = function (e) {
-    console.log(e.alarm.data.message);
+    console.log(e.task.data.message);
 };
 request.onerror = function (e) {
     alert("Sorry, couldn't set the alarm: " + e);
@@ -176,11 +176,11 @@ How to add an alarm that respects timezone information?
 </p>
 <pre>// Wake me up in 7 hours 
 var time = new Date(new Date(Date.now() + (3600000 * 7)));
-var request = navigator.alarms.add(time, "respectTimezone", {
+var request = navigator.taskScheduler.add(time, "respectTimezone", {
   message: "Wake up!"
 });
 request.onsuccess = function (e) {
-  alert(e.alarm.data.message);
+  alert(e.task.data.message);
 };
 request.onerror = function (e) {
    alert("Could not set the alarm, sorry. Error " + e);
@@ -189,7 +189,7 @@ request.onerror = function (e) {
 <p>
 How to get all the alarms that have been set and did not go off yet?
 </p>
-<pre>var request = navigator.alarms.getPendingAlarms();
+<pre>var request = navigator.taskScheduler.getPendingTasks();
 request.onsuccess = function (e) {
   alert("There are " + e.target.result.length + " alarms set."));
 };
@@ -200,7 +200,7 @@ request.onerror = function (e) {
 <p>
 How to remove an existing alarm?
 </p>
-<pre>var request = navigator.alarms.remove(id);
+<pre>var request = navigator.taskScheduler.remove(id);
 request.onsuccess = function (e) {
   alert("alarm removed");
 };
@@ -209,19 +209,19 @@ request.onerror = function (e) {
 };
 </pre>
 <p>
-How to register a listener for an <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <a href="#system-message">system message</a>?
+How to register a listener for an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <a href="#system-message">system message</a>?
 </p>
-<pre>function onAlarmFired(alarm) {
-  alert("alarm fired at: " + alarm.date);
+<pre>function onScheduledTaskFired(task) {
+  alert("task scheduled at: " + task.date);
 }
-navigator.setMessageHandler("alarm", onAlarmFired);
+navigator.setMessageHandler("task", onScheduledTaskFired);
 </pre>
 <p>
-How to know in advance if there exists any pending <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <a href="#system-message">system
+How to know in advance if there exists any pending <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <a href="#system-message">system
 message</a>?
 </p>
-<pre>if (navigator.hasPendingMessages("alarm"))
-  alert("There is at least 1 pending 'alarm' system message.");
+<pre>if (navigator.hasPendingMessages("task"))
+  alert("There is at least 1 pending 'task' system message.");
 </pre>
 </div>
 <h2 id="conformance"><span class="secno">2 </span>
@@ -268,71 +268,70 @@ types</a></dfn> are defined in <a href="#refsHTML5">[HTML5]</a>.
 The term <dfn id="system-message"><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in
 <a href="#refsRUNTIME">[RUNTIME]</a>.
 </p>
-<h2 id="web-alarms-api"><span class="secno">4 </span>
-Web Alarms API
+<h2 id="task-scheduler-api"><span class="secno">4 </span>
+Task Scheduler API
 </h2>
 <p>
 <em>This section is non-normative.</em>
 </p>
 <p>
-The Alarm API supports the following features:
+The task scheduler supports the following features:
 </p>
 <ul>
-<li>Web applications can add multiple alarms and get a returned ID for each of them.
+<li>Web applications can schedule multiple tasks and get a returned ID for each of them.
 </li>
-<li>The returned ID is unique (within the application origin) and can be used to specify and remove the added alarm.
+<li>The returned ID is unique (within the application origin) and can be used to specify and remove the scheduled task.
 </li>
-<li>Web applications can pass a <a href="#json-serializable-object">JSON-serializable object</a> to describe more details about each alarm
-setting.
+<li>Web applications can pass a <a href="#json-serializable-object">JSON-serializable object</a> to describe more details about each task setting.
 </li>
-<li>Web applications can only access their own alarms.
+<li>Web applications can only access their own scheduled tasks.
 </li>
-<li>When the alarm goes off, an <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> is sent to
-the application.
+<li>When a scheduled time is reached, an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system message</a></code> is
+sent to the application.
 </li>
-<li>All the alarms that have been added can be automatically restored after rebooting the system.
+<li>All the tasks that have been scheduled are automatically restored after rebooting the system.
 </li>
-<li>Alarm API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the system from
-sleeping.
+<li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
+system from sleeping.
 </li>
-<li>Whenever the system clock or timezone is adjusted at run-time, all the saved alarms will be rescheduled.
+<li>Whenever the system clock or timezone is adjusted at run-time, all the saved tasks will be rescheduled.
 </li>
 </ul>
 <h3 id="interface-navigator"><span class="secno">4.1 </span>
 Interface <code title="">Navigator</code>
 </h3>
 <pre class="idl">partial interface Navigator {
-  readonly attribute <a href="#alarmmanager">AlarmManager</a> <a href="#navigator-alarms" title="Navigator-alarms">alarms</a>;
+  readonly attribute <a href="#taskscheduler">TaskScheduler</a> <a href="#navigator-taskscheduler" title="Navigator-taskScheduler">taskScheduler</a>;
 }
 </pre>
 <p>
-The <dfn id="navigator-alarms" title="Navigator-alarms"><code>alarms</code></dfn> attribute provides the developer access to an
-<code><a href="#alarmmanager">AlarmManager</a></code>.
+The <dfn id="navigator-taskscheduler" title="Navigator-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
+<code><a href="#taskscheduler">TaskScheduler</a></code>.
 </p>
-<h3 id="interface-alarmmanager"><span class="secno">4.2 </span>
-Interface <code title="">AlarmManager</code>
+<h3 id="interface-taskscheduler"><span class="secno">4.2 </span>
+Interface <code title="">TaskScheduler</code>
 </h3>
 <p>
-The <code><a href="#alarmmanager">AlarmManager</a></code> interface exposes methods to get, set or remove alarms. Alarms are application specific,
-so there is no way to see the alarms scheduled by other applications nor to modify them. Developers should set a
-message handler for the <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> to listen for when
-alarms trigger.
+The <code><a href="#taskscheduler">TaskScheduler</a></code> interface exposes methods to get, set or remove scheduled tasks. ScheduledTasks are
+application specific, so there is no way to see the tasks scheduled by other applications nor to modify them.
+Developers should set a message handler for the <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system
+message</a></code> to listen for when scheduled tasks should be executed.
 </p>
 <pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
-interface <dfn id="alarmmanager">AlarmManager</dfn> {
-  <a href="#future">Future</a> <a href="#alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms">getPendingAlarms</a>();
-  <a href="#future">Future</a> <a href="#alarmmanager-add" title="AlarmManager-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
-  <a href="#future">Future</a> <a href="#alarmmanager-remove" title="AlarmManager-remove">remove</a>(DOMString <var title="">alarmId</var>);
-  <a href="#future">Future</a> <a href="#alarmmanager-clear" title="AlarmManager-clear">clear</a>();
+interface <dfn id="taskscheduler">TaskScheduler</dfn> {
+  <a href="#future">Future</a> <a href="#taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks">getPendingTasks</a>();
+  <a href="#future">Future</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
+  <a href="#future">Future</a> <a href="#taskscheduler-remove" title="TaskScheduler-remove">remove</a>(DOMString <var title="">taskId</var>);
+  <a href="#future">Future</a> <a href="#taskscheduler-clear" title="TaskScheduler-clear">clear</a>();
 };
 </pre>
 <p>
-When invoked, the <dfn id="alarmmanager-getpendingalarms" title="AlarmManager-getPendingAlarms"><code>getPendingAlarms()</code></dfn> method <em class="ct">must</em> run the following steps:
+When invoked, the <dfn id="taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks"><code>getPendingTasks()</code></dfn> method <em class="ct">must</em> run the following steps:
 </p>
 <ol>
-<li>Make a request to the system to retrieve the alarms that were registered by the current application and that did
-not go off yet.
+<li>Make a request to the system to retrieve the tasks that were registered by the current application and whose
+scheduled time is in the future.
 </li>
 <li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.
 </li>
@@ -348,21 +347,21 @@ not go off yet.
 </li>
 <li>When the operation completes successfully, run these substeps:
 <ol>
-<li>Let <em>alarms</em> be a new array containing the <code><a href="#alarm">Alarm</a></code> objects that were retrieved.
+<li>Let <em>tasks</em> be a new array containing the <code><a href="#scheduledtask">ScheduledTask</a></code> objects that were retrieved.
 </li>
-<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>alarms</em> as <code>value</code> argument.
+<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>tasks</em> as <code>value</code> argument.
 </li>
 </ol>
 </li>
 </ol>
 <p>
-When invoked, the <dfn id="alarmmanager-add" title="AlarmManager-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[,
+When invoked, the <dfn id="taskscheduler-add" title="TaskScheduler-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[,
 <var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
 </p>
 <ol>
-<li>Make a request to the system to register a new alarm for the current application that will trigger at the given
+<li>Make a request to the system to schedule a new task for the current application that will trigger at the given
 <code>date</code>. Depending on the <code><a href="#timezonedirective">timezoneDirective</a></code> argument, the system will honor the timezone
-information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the alarm if provided.</span>
+information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the task if provided.</span>
 </li>
 <li>
 <span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
@@ -388,37 +387,36 @@ argument.</span>
 <span>When the operation completes successfully, run these substeps:</span>
 <ol>
 <li>
-<span>Let <em><a href="#alarm">alarm</a></em> be a new <code><a href="#alarm">Alarm</a></code> object.</span>
+<span>Let <em>task</em> be a new <code><a href="#scheduledtask">ScheduledTask</a></code> object.</span>
 </li>
 <li>
-<span>Set <em><a href="#alarm">alarm</a></em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly
-registered alarm.</span>
+<span>Set <em>task</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly
+registered task.</span>
 </li>
 <li>
-<span>Set <em><a href="#alarm">alarm</a></em>'s <code>date</code> attribute to the <code>date</code> argument.</span>
+<span>Set <em>task</em>'s <code>date</code> attribute to the <code>date</code> argument.</span>
 </li>
 <li>
-<span>Set <em><a href="#alarm">alarm</a></em>'s <code><a href="#timezonedirective">timezoneDirective</a></code> attribute to the <code><a href="#timezonedirective">timezoneDirective</a></code>
+<span>Set <em>task</em>'s <code><a href="#timezonedirective">timezoneDirective</a></code> attribute to the <code><a href="#timezonedirective">timezoneDirective</a></code>
 argument.</span>
 </li>
 <li>
-<span>Set <em><a href="#alarm">alarm</a></em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
+<span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
 </li>
 <li>
-<span>Call <em>resolver</em>'s <code>accept(value)</code> method with <em><a href="#alarm">alarm</a></em> as <code>value</code>
+<span>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>task</em> as <code>value</code>
 argument.</span>
 </li>
 </ol>
 </li>
 </ol>
 <p>
-<span>When invoked, the <dfn id="alarmmanager-remove" title="AlarmManager-remove"><code>remove(<var>alarmId</var>)</code></dfn> method
+<span>When invoked, the <dfn id="taskscheduler-remove" title="TaskScheduler-remove"><code>remove(<var>taskId</var>)</code></dfn> method
 <em class="ct">must</em> run the following steps:</span>
 </p>
 <ol>
 <li>
-<span>Make a request to the system to unregister the alarm with the given unique <code>alarmId</code>
-identifier.</span>
+<span>Make a request to the system to unregister the task with the given unique <code>taskId</code> identifier.</span>
 </li>
 <li>
 <span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
@@ -445,8 +443,8 @@ argument.</span>
 <span>Let <em>removed</em> be a boolean value.</span>
 </li>
 <li>
-<span>Set <em>removed</em> to <code>true</code> if the alarm was removed, and to <code>false</code> if there was no
-alarm with the given identifier.</span>
+<span>Set <em>removed</em> to <code>true</code> if the task was removed, and to <code>false</code> if there was no task
+with the given identifier.</span>
 </li>
 <li>
 <span>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>removed</em> as <code>value</code>
@@ -456,12 +454,12 @@ argument.</span>
 </li>
 </ol>
 <p>
-<span>When invoked, the <dfn id="alarmmanager-clear" title="AlarmManager-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run
+<span>When invoked, the <dfn id="taskscheduler-clear" title="TaskScheduler-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run
 the following steps:</span>
 </p>
 <ol>
 <li>
-<span>Make a request to the system to unregister all pending alarms set by the current application.</span>
+<span>Make a request to the system to unregister all pending scheduled tasks set by the current application.</span>
 </li>
 <li>
 <span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
@@ -486,47 +484,47 @@ argument.</span>
 argument.</span>
 </li>
 </ol>
-<h3 id="interface-alarm"><span class="secno">4.3 </span>
-<span>Interface <code title="">Alarm</code></span>
+<h3 id="interface-scheduledtask"><span class="secno">4.3 </span>
+<span>Interface <code title="">ScheduledTask</code></span>
 </h3>
 <p>
-<span>The <code><a href="#alarm">Alarm</a></code> interface captures the properties of a registered alarm.</span>
+<span>The <code><a href="#scheduledtask">ScheduledTask</a></code> interface captures the properties of a scheduled task.</span>
 </p>
-<pre class="idl"><span>interface <dfn id="alarm">Alarm</dfn> {
-  readonly attribute DOMString <a href="#alarm-id" title="Alarm-id">id</a>;
-  readonly attribute Date <a href="#alarm-date" title="Alarm-date">date</a>;
-  readonly attribute <a href="#timezonedirective">TimezoneDirective</a> <a href="#alarm-timezonedirective" title="Alarm-timezoneDirective">timezoneDirective</a>;
-  readonly attribute any <a href="#alarm-data" title="Alarm-data">data</a>;
+<pre class="idl"><span>interface <dfn id="scheduledtask">ScheduledTask</dfn> {
+  readonly attribute DOMString <a href="#scheduledtask-id" title="ScheduledTask-id">id</a>;
+  readonly attribute Date <a href="#scheduledtask-date" title="ScheduledTask-date">date</a>;
+  readonly attribute <a href="#timezonedirective">TimezoneDirective</a> <a href="#scheduledtask-timezonedirective" title="ScheduledTask-timezoneDirective">timezoneDirective</a>;
+  readonly attribute any <a href="#scheduledtask-data" title="ScheduledTask-data">data</a>;
 };</span>
 </pre>
 <p>
-The <dfn id="alarm-id" title="Alarm-id"><code>id</code></dfn> attribute returns an identifier for the given <code><a href="#alarm">Alarm</a></code> object
-that is unique within the origin. An implementation <em class="ct">must</em> maintain this identifier when a
-<code><a href="#alarm">Alarm</a></code> is added.
+The <dfn id="scheduledtask-id" title="ScheduledTask-id"><code>id</code></dfn> attribute returns an identifier for the given
+<code><a href="#scheduledtask">ScheduledTask</a></code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain
+this identifier when a <code><a href="#scheduledtask">ScheduledTask</a></code> is added.
 </p>
 <p>
-The <dfn id="alarm-date" title="Alarm-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when the alarm
-is intended to trigger.
+The <dfn id="scheduledtask-date" title="ScheduledTask-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when
+the task is scheduled to run.
 </p>
 <p>
-The <dfn id="alarm-timezonedirective" title="Alarm-timezoneDirective"><code>timezoneDirective</code></dfn> attribute indicates if the timezone
-information of the <code>Date</code> object is ignored.
+The <dfn id="scheduledtask-timezonedirective" title="ScheduledTask-timezoneDirective"><code>timezoneDirective</code></dfn> attribute indicates if the
+timezone information of the <code>Date</code> object is ignored.
 </p>
 <p>
-The <dfn id="alarm-data" title="Alarm-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
-data</span> associated with the alarm.
+The <dfn id="scheduledtask-data" title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
+data</span> associated with the task.
 </p>
-<h3 id="the-alarm-system-message"><span class="secno">4.4 </span>
-The <dfn title="alarm-system-message"><code title="alarm-system-message">alarm</code></dfn> system message
+<h3 id="the-task-system-message"><span class="secno">4.4 </span>
+The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> system message
 </h3>
 <p>
-An <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> <code><a href="#system-message">system message</a></code> is fired when an alarm goes off. This
-event is originated from the system and will wake up the application if it is not currently running.
+An <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system message</a></code> is fired when a scheduled task should be
+executed. This event is originated from the system and will wake up the application if it is not currently running.
 </p>
 <p>
-The developer should set message handler for the <code title="alarm-system-message"><a href="#the-alarm-system-message">alarm</a></code> system message to
-listen for when alarms go off. The <code><a href="#alarm">Alarm</a></code> that was went off will be passed in argument to the system
-message callback.
+The developer should set message handler for the <code title="task-system-message"><a href="#the-task-system-message">task</a></code> system message to listen
+for when scheduled tasks should be executed. The <code><a href="#scheduledtask">ScheduledTask</a></code> that was went off will be passed in
+argument to the system message callback.
 </p>
 <h3 id="timezone-dst"><span class="secno">4.5 </span>
 Timezones and daylight savings
@@ -550,7 +548,7 @@ Let's consider an alarm on March 10, 2013 at 2:00am in a timezone where daylight
 in San Francisco, CA):
 </p>
 <pre>var time = new Date(2013, 2, 10, 2, 00, 00);
-navigator.alarms.add(time, "ignoreTimezone");
+navigator.taskScheduler.add(time, "ignoreTimezone");
 </pre>
 <p>
 In San Francisco, CA, clocks are turned forward 1 hour on Sunday, March 10, 2013 at 2:00am due to daylight savings. In
@@ -561,7 +559,7 @@ Let's consider an alarm on November 3, 2013 at 1:10am in a timezone where daylig
 in San Francisco, CA):
 </p>
 <pre>var time = new Date(2013, 10, 3, 1, 10, 00);
-navigator.alarms.add(time, "ignoreTimezone");
+navigator.taskScheduler.add(time, "ignoreTimezone");
 </pre>
 <p>
 In San Francisco, CA, clocks are turned backward 1 hour on Sunday, November 3, 2013 at 2:00am. In this case, the alarm
@@ -582,7 +580,7 @@ argument set to "ignoreTimezone":
 </p>
 <pre>// User is currently in Pacific Standard Time (PST)
 var time = new Date(2013, 0, 21, 7, 0, 00);
-navigator.alarms.add(time, "ignoreTimezone"); 
+navigator.taskScheduler.add(time, "ignoreTimezone"); 
 </pre>
 <p>
 If the user is traveling to New York on that day and currently in Eastern Standard Time (EST), the alarm needs to fire
@@ -594,7 +592,7 @@ argument set to "respectTimezone":
 </p>
 <pre>// User is currently in Pacific Standard Time (PST)
 var time = new Date(2013, 0, 21, 7, 0, 00); 
-navigator.alarms.add(time, "respectTimezone");
+navigator.taskScheduler.add(time, "respectTimezone");
 </pre>
 <p>
 If the user is traveling to New York on that day and currently in Eastern Standard Time (EST), the alarm needs to fire
