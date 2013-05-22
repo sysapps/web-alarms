@@ -116,56 +116,54 @@ Example use of the ScheduledTask API for adding, getting and removing and listen
 How to add an alarm the ignores timezone information?
 </p>
 <pre>
+function onTaskAdded(task) {
+  console.log(task.data.message);
+}
+function onError(error) {
+  alert("Sorry, couldn't set the alarm: " + error);
+}
+
 var date = new Date("May 15, 2012 16:20:00");
-var request = navigator.taskScheduler.add(date, "ignoreTimezone", {
-    message: "Your soup is ready!"
-});
-request.onsuccess = function (e) {
-    console.log(e.task.data.message);
-};
-request.onerror = function (e) {
-    alert("Sorry, couldn't set the alarm: " + e);
-};
+navigator.taskScheduler.add(date, "ignoreTimezone", {
+  message: "Your soup is ready!"
+}).done(onTaskAdded, onError);
 </pre>
 <p>
 How to add an alarm that respects timezone information?
 </p>
 <pre>
+function onTaskAdded(task) {
+  console.log(task.data.message);
+}
+function onError(error) {
+  alert("Sorry, couldn't set the alarm: " + error);
+}
+
 // Wake me up in 7 hours 
 var time = new Date(new Date(Date.now() + (3600000 * 7)));
-var request = navigator.taskScheduler.add(time, "respectTimezone", {
+navigator.taskScheduler.add(time, "respectTimezone", {
   message: "Wake up!"
+}).done(onTaskAdded, onError);
+</pre>
+<p>
+How to get all the scheduled tasks whose time is in the future?
+</p>
+<pre>
+navigator.taskScheduler.getPendingTasks().done(function(tasks) {
+  alert("There are " + tasks.length + " tasks set."));
+}, function(error) {
+    alert("An error occurred getting the scheduled tasks.");
 });
-request.onsuccess = function (e) {
-  alert(e.task.data.message);
-};
-request.onerror = function (e) {
-   alert("Could not set the alarm, sorry. Error " + e);
-};
 </pre>
 <p>
-How to get all the alarms that have been set and did not go off yet?
+How to remove a scheduled task?
 </p>
 <pre>
-var request = navigator.taskScheduler.getPendingTasks();
-request.onsuccess = function (e) {
-  alert("There are " + e.target.result.length + " alarms set."));
-};
-request.onerror = function (e) {
-  alert("An error occurred getting the alarms.");
-};
-</pre>
-<p>
-How to remove an existing alarm?
-</p>
-<pre>
-var request = navigator.taskScheduler.remove(id);
-request.onsuccess = function (e) {
-  alert("alarm removed");
-};
-request.onerror = function (e) {
-  alert("Sorry, can't remove the alarm.");
-};
+var request = navigator.taskScheduler.remove(id).done(function() {
+  alert("Task removed");
+}, function(error) {
+  alert("Sorry, can't remove the task.");
+});
 </pre>
 <p>
 How to register a listener for an <code title="task-system-message">task</code> <span>system message</span>?
