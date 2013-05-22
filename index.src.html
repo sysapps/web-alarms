@@ -289,7 +289,6 @@ interface <dfn>TaskScheduler</dfn> {
 "">date</var>, <span>TimezoneDirective</span> <var title="">timezoneDirective</var>, optional any <var title=
 "">data</var>);
   <span>Future</span> <span title="TaskScheduler-remove">remove</span>(DOMString <var title="">taskId</var>);
-  <span>Future</span> <span title="TaskScheduler-clear">clear</span>();
 };
 </pre>
 <p>
@@ -419,37 +418,6 @@ with the given identifier.</span>
 argument.</span>
 </li>
 </ol>
-</li>
-</ol>
-<p>
-<span>When invoked, the <dfn title="TaskScheduler-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run
-the following steps:</span>
-</p>
-<ol>
-<li>
-<span>Make a request to the system to unregister all pending scheduled tasks set by the current application.</span>
-</li>
-<li>
-<span>Let <em>future</em> be a new <code>Future</code> object and <em>resolver</em> its associated resolver.</span>
-</li>
-<li>
-<span>Return <em>future</em>.</span>
-</li>
-<li>
-<span>If an error occurs, run these substeps and then terminate these steps:</span>
-<ol>
-<li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</span>
-</li>
-<li>
-<span>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code>
-argument.</span>
-</li>
-</ol>
-</li>
-<li>
-<span>When the operation completes successfully, call <em>resolver</em>'s <code>accept(value)</code> method with no
-argument.</span>
 </li>
 </ol>
 <h3>
