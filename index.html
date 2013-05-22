@@ -321,7 +321,6 @@ interface <dfn id="taskscheduler">TaskScheduler</dfn> {
   <a href="#future">Future</a> <a href="#taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks">getPendingTasks</a>();
   <a href="#future">Future</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
   <a href="#future">Future</a> <a href="#taskscheduler-remove" title="TaskScheduler-remove">remove</a>(DOMString <var title="">taskId</var>);
-  <a href="#future">Future</a> <a href="#taskscheduler-clear" title="TaskScheduler-clear">clear</a>();
 };
 </pre>
 <p>
@@ -449,37 +448,6 @@ with the given identifier.</span>
 argument.</span>
 </li>
 </ol>
-</li>
-</ol>
-<p>
-<span>When invoked, the <dfn id="taskscheduler-clear" title="TaskScheduler-clear"><code>clear()</code></dfn> method <em class="ct">must</em> run
-the following steps:</span>
-</p>
-<ol>
-<li>
-<span>Make a request to the system to unregister all pending scheduled tasks set by the current application.</span>
-</li>
-<li>
-<span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
-</li>
-<li>
-<span>Return <em><a href="#future">future</a></em>.</span>
-</li>
-<li>
-<span>If an error occurs, run these substeps and then terminate these steps:</span>
-<ol>
-<li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</span>
-</li>
-<li>
-<span>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code>
-argument.</span>
-</li>
-</ol>
-</li>
-<li>
-<span>When the operation completes successfully, call <em>resolver</em>'s <code>accept(value)</code> method with no
-argument.</span>
 </li>
 </ol>
 <h3 id="interface-scheduledtask"><span class="secno">4.3 </span>
