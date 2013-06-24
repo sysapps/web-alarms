@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-22-may-2013">
-Editor Draft — 22 May 2013
+<h2 class="no-num no-toc" id="editor-draft-—-24-june-2013">
+Editor Draft — 24 June 2013
 </h2>
 <dl>
 <dt>
@@ -170,7 +170,7 @@ function onError(error) {
 var date = new Date("May 15, 2012 16:20:00");
 navigator.taskScheduler.add(date, "ignoreTimezone", {
   message: "Your soup is ready!"
-}).done(onTaskAdded, onError);
+}).then(onTaskAdded, onError);
 </pre>
 <p>
 How to add an alarm that respects timezone information?
@@ -186,12 +186,12 @@ function onError(error) {
 var time = new Date(new Date(Date.now() + (3600000 * 7)));
 navigator.taskScheduler.add(time, "respectTimezone", {
   message: "Wake up!"
-}).done(onTaskAdded, onError);
+}).then(onTaskAdded, onError);
 </pre>
 <p>
 How to get all the scheduled tasks whose time is in the future?
 </p>
-<pre>navigator.taskScheduler.getPendingTasks().done(function(tasks) {
+<pre>navigator.taskScheduler.getPendingTasks().then(function(tasks) {
   alert("There are " + tasks.length + " tasks set."));
 }, function(error) {
     alert("An error occurred getting the scheduled tasks.");
@@ -200,7 +200,7 @@ How to get all the scheduled tasks whose time is in the future?
 <p>
 How to remove a scheduled task?
 </p>
-<pre>var request = navigator.taskScheduler.remove(id).done(function() {
+<pre>var request = navigator.taskScheduler.remove(id).then(function() {
   alert("Task removed");
 }, function(error) {
   alert("Sorry, can't remove the task.");
@@ -247,7 +247,7 @@ The <dfn id="eventhandler"><code><a href="http://dev.w3.org/html5/spec/webappapi
 interface represents a callback used for handling events as defined in <a href="#refsHTML5">[HTML5]</a>.
 </p>
 <p>
-The <dfn id="future"><code><a href="http://dom.spec.whatwg.org/#future">Future</a></code></dfn> interface provides asynchronous
+The <dfn id="promise"><code><a href="http://dom.spec.whatwg.org/#promise">Promise</a></code></dfn> interface provides asynchronous
 access to the result of an operation that is ongoing, has yet to start, or has completed, as defined in
 <a href="#refsDOM">[DOM]</a>.
 </p>
@@ -318,9 +318,9 @@ message</a></code> to listen for when scheduled tasks should be executed.
 <pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
 
 interface <dfn id="taskscheduler">TaskScheduler</dfn> {
-  <a href="#future">Future</a> <a href="#taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks">getPendingTasks</a>();
-  <a href="#future">Future</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
-  <a href="#future">Future</a> <a href="#taskscheduler-remove" title="TaskScheduler-remove">remove</a>(DOMString <var title="">taskId</var>);
+  <a href="#promise">Promise</a> <a href="#taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks">getPendingTasks</a>();
+  <a href="#promise">Promise</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
+  <a href="#promise">Promise</a> <a href="#taskscheduler-remove" title="TaskScheduler-remove">remove</a>(DOMString <var title="">taskId</var>);
 };
 </pre>
 <p>
@@ -330,15 +330,15 @@ When invoked, the <dfn id="taskscheduler-getpendingtasks" title="TaskScheduler-g
 <li>Make a request to the system to retrieve the tasks that were registered by the current application and whose
 scheduled time is in the future.
 </li>
-<li>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.
+<li>Let <em><a href="#promise">promise</a></em> be a new <code><a href="#promise">Promise</a></code> object and <em>resolver</em> its associated resolver.
 </li>
-<li>Return <em><a href="#future">future</a></em> and run the remaining steps asynchronously.
+<li>Return <em><a href="#promise">promise</a></em> and run the remaining steps asynchronously.
 </li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
 <li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.
 </li>
-<li>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code> argument.
+<li>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.
 </li>
 </ol>
 </li>
@@ -346,7 +346,7 @@ scheduled time is in the future.
 <ol>
 <li>Let <em>tasks</em> be a new array containing the <code><a href="#scheduledtask">ScheduledTask</a></code> objects that were retrieved.
 </li>
-<li>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>tasks</em> as <code>value</code> argument.
+<li>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>tasks</em> as <code>value</code>.
 </li>
 </ol>
 </li>
@@ -361,10 +361,10 @@ When invoked, the <dfn id="taskscheduler-add" title="TaskScheduler-add"><code>ad
 information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the task if provided.</span>
 </li>
 <li>
-<span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
+<span>Let <em><a href="#promise">promise</a></em> be a new <code><a href="#promise">Promise</a></code> object and <em>resolver</em> its associated resolver.</span>
 </li>
 <li>
-<span>Return <em><a href="#future">future</a></em> and run the remaining steps asynchronously.</span>
+<span>Return <em><a href="#promise">promise</a></em> and run the remaining steps asynchronously.</span>
 </li>
 <li>
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
@@ -375,8 +375,7 @@ information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code>
 an implementation-dependent size limit, and <code>"UnknownError"</code> otherwise.</span>
 </li>
 <li>
-<span>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code>
-argument.</span>
+<span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
 </li>
 </ol>
 </li>
@@ -401,8 +400,7 @@ argument.</span>
 <span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
 </li>
 <li>
-<span>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>task</em> as <code>value</code>
-argument.</span>
+<span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
 </li>
 </ol>
 </li>
@@ -416,10 +414,10 @@ argument.</span>
 <span>Make a request to the system to unregister the task with the given unique <code>taskId</code> identifier.</span>
 </li>
 <li>
-<span>Let <em><a href="#future">future</a></em> be a new <code><a href="#future">Future</a></code> object and <em>resolver</em> its associated resolver.</span>
+<span>Let <em><a href="#promise">promise</a></em> be a new <code><a href="#promise">Promise</a></code> object and <em>resolver</em> its associated resolver.</span>
 </li>
 <li>
-<span>Return <em><a href="#future">future</a></em> and run the remaining steps asynchronously.</span>
+<span>Return <em><a href="#promise">promise</a></em> and run the remaining steps asynchronously.</span>
 </li>
 <li>
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
@@ -428,8 +426,7 @@ argument.</span>
 <span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</span>
 </li>
 <li>
-<span>Call <em>resolver</em>'s <code>reject(value)</code> method with <em>error</em> as <code>value</code>
-argument.</span>
+<span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
 </li>
 </ol>
 </li>
@@ -444,8 +441,8 @@ argument.</span>
 with the given identifier.</span>
 </li>
 <li>
-<span>Call <em>resolver</em>'s <code>accept(value)</code> method with <em>removed</em> as <code>value</code>
-argument.</span>
+<span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>removed</em> as
+<code>value</code>.</span>
 </li>
 </ol>
 </li>
