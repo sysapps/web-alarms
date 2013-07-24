@@ -1,4 +1,5 @@
-This repository is the home of the **Web Alarms API Specification** being worked on by the System Applications Working Group.
+This repository is the home of the [Web Alarms API Specification](http://www.w3.org/2012/sysapps/web-alarms/) 
+being worked on by the System Applications Working Group.
 
 This W3C API specification is formatted using Anolis (see http://wiki.whatwg.org/wiki/Anolis).
 
