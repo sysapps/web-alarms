@@ -82,8 +82,7 @@ Editors:
 </dt>
 <dd class="vcard">
 <span class="fn">Christophe Dumez</span>, <span class="org"><a href="http://www.samsung.com/sec">Samsung Electronics,
-Co., Ltd</a></span>, <span class="email"><a href=
-"mailto:ch.dumez@samsung.com">ch.dumez@samsung.com</a></span>
+Co., Ltd</a></span>, <span class="email"><a href="mailto:ch.dumez@samsung.com">ch.dumez@samsung.com</a></span>
 </dd>
 </dl>
 <div class="w3conly">
@@ -326,7 +325,8 @@ When invoked, the <dfn title="TaskScheduler-add"><code>add(<var>date</var>, <var
 </p>
 <ol>
 <li>Make a request to the system to schedule a new task for the current application that will trigger at the given
-<code>date</code>. Depending on the <code>timezoneDirective</code> argument, the system will honor the timezone
+<code>date</code>. If the <code>date</code> argument is in the past, the task will be executed as soon as possible,
+asynchronously. Depending on the <code>timezoneDirective</code> argument, the system will honor the timezone
 information of that <span data-anolis-ref="">ECMASCRIPT</span> <code>Date</code> object or not. The system <em class=
 "ct">must</em> associate the <span>JSON-serializable <code>data</code> with the task if provided.</span>
 </li>
@@ -340,9 +340,9 @@ information of that <span data-anolis-ref="">ECMASCRIPT</span> <code>Date</code>
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
 <ol>
 <li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"InvalidStateError"</code> if the
-<code>date</code> argument is in the past, <code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds
-an implementation-dependent size limit, and <code>"UnknownError"</code> otherwise.</span>
+<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"QuotaExceededError"</code> if the
+<code>data</code> argument exceeds an implementation-dependent size limit, and <code>"UnknownError"</code>
+otherwise.</span>
 </li>
 <li>
 <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
@@ -370,7 +370,7 @@ argument.</span>
 <span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
 </li>
 <li>
-<span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
+<span>Run <em>resolver</em>'s internal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
 </li>
 </ol>
 </li>
