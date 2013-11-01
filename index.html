@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-31-october-2013">
-Editor Draft — 31 October 2013
+<h2 class="no-num no-toc" id="editor-draft-—-1-november-2013">
+Editor Draft — 1 November 2013
 </h2>
 <dl>
 <dt>
@@ -129,17 +129,7 @@ Interface <code title="">TaskScheduler</code>
 </a></li>
    <li><a href="#the-task-system-message"><span class="secno">4.4 </span>
 The <code title="task-system-message">task</code> system message
-</a></li>
-   <li><a href="#timezone-dst"><span class="secno">4.5 </span>
-Timezones and daylight savings
-</a>
-    <ol class="toc">
-     <li><a href="#crossing-daylight-savings-time-boundaries"><span class="secno">4.5.1 </span>
-Crossing daylight savings time boundaries
-</a></li>
-     <li><a href="#crossing-timezone-boundaries"><span class="secno">4.5.2 </span>
-Crossing timezone boundaries
-</a></ol></ol></li>
+</a></ol></li>
  <li><a class="no-num" href="#references">
 References
 </a></li>
@@ -158,7 +148,7 @@ Introduction
 Example use of the ScheduledTask API for adding, getting and removing and listening for the alarm clock use cases:
 </p>
 <p>
-How to add an alarm that ignores timezone information?
+How to set an alarm 10 minutes from now?
 </p>
 <pre>function onTaskAdded(task) {
   console.log(task.data.message);
@@ -167,25 +157,8 @@ function onError(error) {
   alert("Sorry, couldn't set the alarm: " + error);
 }
 
-var date = new Date("May 15, 2012 16:20:00");
-navigator.taskScheduler.add(date, "ignoreTimezone", {
-  message: "Your soup is ready!"
-}).then(onTaskAdded, onError);
-</pre>
-<p>
-How to add an alarm that respects timezone information?
-</p>
-<pre>function onTaskAdded(task) {
-  console.log(task.data.message);
-}
-function onError(error) {
-  alert("Sorry, couldn't set the alarm: " + error);
-}
-
-// Wake me up in 7 hours 
-var time = new Date(new Date(Date.now() + (3600000 * 7)));
-navigator.taskScheduler.add(time, "respectTimezone", {
-  message: "Wake up!"
+navigator.taskScheduler.add(date.now() + (10 * 60000), {
+  message: "It's been 10 minutes, your soup is ready!"
 }).then(onTaskAdded, onError);
 </pre>
 <p>
@@ -210,7 +183,7 @@ How to remove a scheduled task?
 How to register a listener for an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <a href="#system-message">system message</a>?
 </p>
 <pre>function onScheduledTaskFired(task) {
-  alert("task scheduled at: " + task.date);
+  alert("task scheduled at: " + new Date(task.time));
 }
 navigator.setMessageHandler("task", onScheduledTaskFired);
 </pre>
@@ -292,8 +265,6 @@ sent to the application.
 <li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
 system from sleeping.
 </li>
-<li>Whenever the system clock or timezone is adjusted at run-time, all the saved tasks will be rescheduled.
-</li>
 </ul>
 <h3 id="interface-navigator"><span class="secno">4.1 </span>
 Interface <code title="">Navigator</code>
@@ -315,11 +286,9 @@ application specific, so there is no way to see the tasks scheduled by other app
 Developers should set a message handler for the <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system
 message</a></code> to listen for when scheduled tasks should be executed.
 </p>
-<pre class="idl">enum <dfn id="timezonedirective">TimezoneDirective</dfn> { "respectTimezone", "ignoreTimezone" };
-
-interface <dfn id="taskscheduler">TaskScheduler</dfn> {
+<pre class="idl">interface <dfn id="taskscheduler">TaskScheduler</dfn> {
   <a href="#promise">Promise</a> <a href="#taskscheduler-getpendingtasks" title="TaskScheduler-getPendingTasks">getPendingTasks</a>();
-  <a href="#promise">Promise</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(Date <var title="">date</var>, <a href="#timezonedirective">TimezoneDirective</a> <var title="">timezoneDirective</var>, optional any <var title="">data</var>);
+  <a href="#promise">Promise</a> <a href="#taskscheduler-add" title="TaskScheduler-add">add</a>(DOMTimeStamp <var title="">time</var>, optional any <var title="">data</var>);
   <a href="#promise">Promise</a> <a href="#taskscheduler-remove" title="TaskScheduler-remove">remove</a>(DOMString <var title="">taskId</var>);
 };
 </pre>
@@ -352,14 +321,14 @@ scheduled time is in the future.
 </li>
 </ol>
 <p>
-When invoked, the <dfn id="taskscheduler-add" title="TaskScheduler-add"><code>add(<var>date</var>, <var>timezoneDirective</var>[,
-<var>data</var>])</code></dfn> method <em class="ct">must</em> run the following steps:
+When invoked, the <dfn id="taskscheduler-add" title="TaskScheduler-add"><code>add(<var>time</var>[, <var>data</var>])</code></dfn> method
+<em class="ct">must</em> run the following steps:
 </p>
 <ol>
 <li>Make a request to the system to schedule a new task for the current application that will trigger at the given
-<code>date</code>. If the <code>date</code> argument is in the past, the task will be executed as soon as possible,
-asynchronously. Depending on the <code><a href="#timezonedirective">timezoneDirective</a></code> argument, the system will honor the timezone
-information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the task if provided.</span>
+<code>time</code> (number of milliseconds since the epoch). If the <code>time</code> argument is in the past, the task
+will be executed as soon as possible, asynchronously. The system <em class="ct">must</em> associate the
+<span>JSON-serializable <code>data</code> with the task if provided.</span>
 </li>
 <li>
 <span>Let <em><a href="#promise">promise</a></em> be a new <code><a href="#promise">Promise</a></code> object and <em>resolver</em> its associated resolver.</span>
@@ -391,11 +360,7 @@ otherwise.</span>
 registered task.</span>
 </li>
 <li>
-<span>Set <em>task</em>'s <code>date</code> attribute to the <code>date</code> argument.</span>
-</li>
-<li>
-<span>Set <em>task</em>'s <code><a href="#timezonedirective">timezoneDirective</a></code> attribute to the <code><a href="#timezonedirective">timezoneDirective</a></code>
-argument.</span>
+<span>Set <em>task</em>'s <code>time</code> attribute to the <code>time</code> argument.</span>
 </li>
 <li>
 <span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
@@ -456,8 +421,7 @@ with the given identifier.</span>
 </p>
 <pre class="idl"><span>interface <dfn id="scheduledtask">ScheduledTask</dfn> {
   readonly attribute DOMString <a href="#scheduledtask-id" title="ScheduledTask-id">id</a>;
-  readonly attribute Date <a href="#scheduledtask-date" title="ScheduledTask-date">date</a>;
-  readonly attribute <a href="#timezonedirective">TimezoneDirective</a> <a href="#scheduledtask-timezonedirective" title="ScheduledTask-timezoneDirective">timezoneDirective</a>;
+  readonly attribute DOMTimeStamp <a href="#scheduledtask-time" title="ScheduledTask-time">time</a>;
   readonly attribute any <a href="#scheduledtask-data" title="ScheduledTask-data">data</a>;
 };</span>
 </pre>
@@ -467,12 +431,8 @@ The <dfn id="scheduledtask-id" title="ScheduledTask-id"><code>id</code></dfn> at
 this identifier when a <code><a href="#scheduledtask">ScheduledTask</a></code> is added.
 </p>
 <p>
-The <dfn id="scheduledtask-date" title="ScheduledTask-date"><code>date</code></dfn> attribute is a <code>Date</code> object representing when
-the task is scheduled to run.
-</p>
-<p>
-The <dfn id="scheduledtask-timezonedirective" title="ScheduledTask-timezoneDirective"><code>timezoneDirective</code></dfn> attribute indicates if the
-timezone information of the <code>Date</code> object is ignored.
+The <dfn id="scheduledtask-time" title="ScheduledTask-time"><code>time</code></dfn> attribute is the time at which this task is scheduled to
+fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, the task may be delayed past this time.
 </p>
 <p>
 The <dfn id="scheduledtask-data" title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
@@ -490,80 +450,6 @@ The developer should set message handler for the <code title="task-system-messag
 for when scheduled tasks should be executed. The <code><a href="#scheduledtask">ScheduledTask</a></code> that was went off will be passed in
 argument to the system message callback.
 </p>
-<h3 id="timezone-dst"><span class="secno">4.5 </span>
-Timezones and daylight savings
-</h3>
-<p>
-<em>This section is non-normative.</em>
-</p>
-<p>
-The implementation needs to consider timezones and respect daylight savings. We will provide examples in this section
-to clarify how non-obvious cases should be handled.
-</p>
-<h4 id="crossing-daylight-savings-time-boundaries"><span class="secno">4.5.1 </span>
-Crossing daylight savings time boundaries
-</h4>
-<p>
-<em>This section is non-normative.</em>
-</p>
-<div class="example">
-<p>
-Let's consider an alarm on March 10, 2013 at 2:00am in a timezone where daylight savings time starts at that time (e.g.
-in San Francisco, CA):
-</p>
-<pre>var time = new Date(2013, 2, 10, 2, 00, 00);
-navigator.taskScheduler.add(time, "ignoreTimezone");
-</pre>
-<p>
-In San Francisco, CA, clocks are turned forward 1 hour on Sunday, March 10, 2013 at 2:00am due to daylight savings. In
-this case, the alarm needs to fire at 3:00am, i.e. one minute after 1:59am.
-</p>
-<p>
-Let's consider an alarm on November 3, 2013 at 1:10am in a timezone where daylight savings time ends on that date (e.g.
-in San Francisco, CA):
-</p>
-<pre>var time = new Date(2013, 10, 3, 1, 10, 00);
-navigator.taskScheduler.add(time, "ignoreTimezone");
-</pre>
-<p>
-In San Francisco, CA, clocks are turned backward 1 hour on Sunday, November 3, 2013 at 2:00am. In this case, the alarm
-fires <em>once</em> the first time that the device is running and the local time is past 1:10am on November 3, 2013.
-After that the alarm is deleted.
-</p>
-</div>
-<h4 id="crossing-timezone-boundaries"><span class="secno">4.5.2 </span>
-Crossing timezone boundaries
-</h4>
-<p>
-<em>This section is non-normative.</em>
-</p>
-<div class="example">
-<p>
-Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with timezoneDirective
-argument set to "ignoreTimezone":
-</p>
-<pre>// User is currently in Pacific Standard Time (PST)
-var time = new Date(2013, 0, 21, 7, 0, 00);
-navigator.taskScheduler.add(time, "ignoreTimezone"); 
-</pre>
-<p>
-If the user is traveling to New York on that day and currently in Eastern Standard Time (EST), the alarm needs to fire
-on January 21, 2013 when it is 7:00am in Eastern Standard Time (EST).
-</p>
-<p>
-Let's consider an alarm set for January 21, 2013 at 7:00am in Pacific Standard Time (PST) with timezoneDirective
-argument set to "respectTimezone":
-</p>
-<pre>// User is currently in Pacific Standard Time (PST)
-var time = new Date(2013, 0, 21, 7, 0, 00); 
-navigator.taskScheduler.add(time, "respectTimezone");
-</pre>
-<p>
-If the user is traveling to New York on that day and currently in Eastern Standard Time (EST), the alarm needs to fire
-on January 21, 2013 when it is 7:00am in Pacific Standard Time (PST), that is 10:00am for the user in Eastern Standard
-Time (EST).
-</p>
-</div>
 <h2 class="no-num" id="references">
 References
 </h2>
