@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-10-october-2013">
-Editor Draft — 10 October 2013
+<h2 class="no-num no-toc" id="editor-draft-—-31-october-2013">
+Editor Draft — 31 October 2013
 </h2>
 <dl>
 <dt>
@@ -357,7 +357,8 @@ When invoked, the <dfn id="taskscheduler-add" title="TaskScheduler-add"><code>ad
 </p>
 <ol>
 <li>Make a request to the system to schedule a new task for the current application that will trigger at the given
-<code>date</code>. Depending on the <code><a href="#timezonedirective">timezoneDirective</a></code> argument, the system will honor the timezone
+<code>date</code>. If the <code>date</code> argument is in the past, the task will be executed as soon as possible,
+asynchronously. Depending on the <code><a href="#timezonedirective">timezoneDirective</a></code> argument, the system will honor the timezone
 information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code> object or not. The system <em class="ct">must</em> associate the <span>JSON-serializable <code>data</code> with the task if provided.</span>
 </li>
 <li>
@@ -370,9 +371,9 @@ information of that <a href="#refsECMASCRIPT">[ECMASCRIPT]</a> <code>Date</code>
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
 <ol>
 <li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"InvalidStateError"</code> if the
-<code>date</code> argument is in the past, <code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds
-an implementation-dependent size limit, and <code>"UnknownError"</code> otherwise.</span>
+<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"QuotaExceededError"</code> if the
+<code>data</code> argument exceeds an implementation-dependent size limit, and <code>"UnknownError"</code>
+otherwise.</span>
 </li>
 <li>
 <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
@@ -400,7 +401,7 @@ argument.</span>
 <span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
 </li>
 <li>
-<span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
+<span>Run <em>resolver</em>'s internal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
 </li>
 </ol>
 </li>
