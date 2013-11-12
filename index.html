@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-1-november-2013">
-Editor Draft — 1 November 2013
+<h2 class="no-num no-toc" id="editor-draft-—-12-november-2013">
+Editor Draft — 12 November 2013
 </h2>
 <dl>
 <dt>
@@ -157,7 +157,7 @@ function onError(error) {
   alert("Sorry, couldn't set the alarm: " + error);
 }
 
-navigator.taskScheduler.add(date.now() + (10 * 60000), {
+navigator.taskScheduler.add(Date.now() + (10 * 60000), {
   message: "It's been 10 minutes, your soup is ready!"
 }).then(onTaskAdded, onError);
 </pre>
