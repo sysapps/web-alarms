@@ -122,7 +122,7 @@ function onError(error) {
   alert("Sorry, couldn't set the alarm: " + error);
 }
 
-navigator.taskScheduler.add(date.now() + (10 * 60000), {
+navigator.taskScheduler.add(Date.now() + (10 * 60000), {
   message: "It's been 10 minutes, your soup is ready!"
 }).then(onTaskAdded, onError);
 </pre>
