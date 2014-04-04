@@ -146,6 +146,12 @@
     "title" : "ECMAScript Language Specification",
     "publisher" : "ECMA"
   },
+  "ECMASCRIPT6" :
+  {
+    "href": "https://people.mozilla.org/~jorendorff/es6-draft.html",
+    "title" : "ECMAScript Language Specification (6th edition, draft)",
+    "publisher" : "ECMA"
+  },
   "EDITING" :
   {
     "href" : "http://dvcs.w3.org/hg/editing/raw-file/tip/editing.html",
