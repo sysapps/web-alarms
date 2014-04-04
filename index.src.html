@@ -211,6 +211,31 @@ types</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
 The term <dfn><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in
 <span data-anolis-ref="">RUNTIME</span>.
 </p>
+<h2 id="requirements">
+Requirements
+</h2>
+<p>
+Below is a summary of requirements associated with this API:
+</p>
+<ol>
+<li>An application <em class="ct">must</em> only be able to access its own scheduled tasks.
+</li>
+<li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
+</li>
+<li>A scheduled task <em class="ct">must</em> automatically be restored upon system restart.
+</li>
+<li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
+</li>
+<li>A scheduled task that was supposed to trigger when the system was off <em class="ct">must</em> be executed
+immediately after the system's next start up.
+</li>
+<li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
+time.
+</li>
+<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
+is uninstalled.
+</li>
+</ol>
 <h2>
 Task Scheduler API
 </h2>
@@ -223,19 +248,15 @@ The task scheduler supports the following features:
 <ul>
 <li>Web applications can schedule multiple tasks and get a returned ID for each of them.
 </li>
-<li>The returned ID is unique (within the application origin) and can be used to specify and remove the scheduled task.
+<li>Each <code>ScheduledTask</code> has a unique identifier that can be used to specify and remove the scheduled task.
 </li>
 <li>Web applications can pass a <span>JSON-serializable object</span> to describe more details about each task setting.
-</li>
-<li>Web applications can only access their own scheduled tasks.
 </li>
 <li>When a scheduled time is reached, an <code title="task-system-message">task</code> <code>system message</code> is
 sent to the application.
 </li>
-<li>All the tasks that have been scheduled are automatically restored after rebooting the system.
-</li>
 <li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
-system from sleeping.
+system from sleeping and scheduled task are not lost when closing the application or restarting the system.
 </li>
 </ul>
 <h3>

@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-12-november-2013">
-Editor Draft — 12 November 2013
+<h2 class="no-num no-toc" id="editor-draft-—-4-april-2014">
+Editor Draft — 4 April 2014
 </h2>
 <dl>
 <dt>
@@ -87,7 +87,7 @@ Co., Ltd</a></span>, <span class="email"><a href="mailto:ch.dumez@samsung.com">c
 <div class="w3conly">
 
 <!--begin-copyright-->
-<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2013 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2014 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 <!--end-copyright-->
 </div>
 </div>
@@ -114,20 +114,23 @@ Conformance
  <li><a href="#terminology"><span class="secno">3 </span>
 Terminology
 </a></li>
- <li><a href="#task-scheduler-api"><span class="secno">4 </span>
+ <li><a href="#requirements"><span class="secno">4 </span>
+Requirements
+</a></li>
+ <li><a href="#task-scheduler-api"><span class="secno">5 </span>
 Task Scheduler API
 </a>
   <ol class="toc">
-   <li><a href="#interface-navigator"><span class="secno">4.1 </span>
+   <li><a href="#interface-navigator"><span class="secno">5.1 </span>
 Interface <code title="">Navigator</code>
 </a></li>
-   <li><a href="#interface-taskscheduler"><span class="secno">4.2 </span>
+   <li><a href="#interface-taskscheduler"><span class="secno">5.2 </span>
 Interface <code title="">TaskScheduler</code>
 </a></li>
-   <li><a href="#interface-scheduledtask"><span class="secno">4.3 </span>
+   <li><a href="#interface-scheduledtask"><span class="secno">5.3 </span>
 <span>Interface <code title="">ScheduledTask</code></span>
 </a></li>
-   <li><a href="#the-task-system-message"><span class="secno">4.4 </span>
+   <li><a href="#the-task-system-message"><span class="secno">5.4 </span>
 The <code title="task-system-message">task</code> system message
 </a></ol></li>
  <li><a class="no-num" href="#references">
@@ -239,7 +242,32 @@ types</a></dfn> are defined in <a href="#refsHTML5">[HTML5]</a>.
 The term <dfn id="system-message"><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in
 <a href="#refsRUNTIME">[RUNTIME]</a>.
 </p>
-<h2 id="task-scheduler-api"><span class="secno">4 </span>
+<h2 id="requirements"><span class="secno">4 </span>
+Requirements
+</h2>
+<p>
+Below is a summary of requirements associated with this API:
+</p>
+<ol>
+<li>An application <em class="ct">must</em> only be able to access its own scheduled tasks.
+</li>
+<li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
+</li>
+<li>A scheduled task <em class="ct">must</em> automatically be restored upon system restart.
+</li>
+<li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
+</li>
+<li>A scheduled task that was supposed to trigger when the system was off <em class="ct">must</em> be executed
+immediately after the system's next start up.
+</li>
+<li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
+time.
+</li>
+<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
+is uninstalled.
+</li>
+</ol>
+<h2 id="task-scheduler-api"><span class="secno">5 </span>
 Task Scheduler API
 </h2>
 <p>
@@ -251,22 +279,18 @@ The task scheduler supports the following features:
 <ul>
 <li>Web applications can schedule multiple tasks and get a returned ID for each of them.
 </li>
-<li>The returned ID is unique (within the application origin) and can be used to specify and remove the scheduled task.
+<li>Each <code><a href="#scheduledtask">ScheduledTask</a></code> has a unique identifier that can be used to specify and remove the scheduled task.
 </li>
 <li>Web applications can pass a <a href="#json-serializable-object">JSON-serializable object</a> to describe more details about each task setting.
-</li>
-<li>Web applications can only access their own scheduled tasks.
 </li>
 <li>When a scheduled time is reached, an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system message</a></code> is
 sent to the application.
 </li>
-<li>All the tasks that have been scheduled are automatically restored after rebooting the system.
-</li>
 <li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
-system from sleeping.
+system from sleeping and scheduled task are not lost when closing the application or restarting the system.
 </li>
 </ul>
-<h3 id="interface-navigator"><span class="secno">4.1 </span>
+<h3 id="interface-navigator"><span class="secno">5.1 </span>
 Interface <code title="">Navigator</code>
 </h3>
 <pre class="idl">partial interface Navigator {
@@ -277,7 +301,7 @@ Interface <code title="">Navigator</code>
 The <dfn id="navigator-taskscheduler" title="Navigator-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
 <code><a href="#taskscheduler">TaskScheduler</a></code>.
 </p>
-<h3 id="interface-taskscheduler"><span class="secno">4.2 </span>
+<h3 id="interface-taskscheduler"><span class="secno">5.2 </span>
 Interface <code title="">TaskScheduler</code>
 </h3>
 <p>
@@ -413,7 +437,7 @@ with the given identifier.</span>
 </ol>
 </li>
 </ol>
-<h3 id="interface-scheduledtask"><span class="secno">4.3 </span>
+<h3 id="interface-scheduledtask"><span class="secno">5.3 </span>
 <span>Interface <code title="">ScheduledTask</code></span>
 </h3>
 <p>
@@ -438,7 +462,7 @@ fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, 
 The <dfn id="scheduledtask-data" title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
 data</span> associated with the task.
 </p>
-<h3 id="the-task-system-message"><span class="secno">4.4 </span>
+<h3 id="the-task-system-message"><span class="secno">5.4 </span>
 The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> system message
 </h3>
 <p>
