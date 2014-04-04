@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-4-april-2014">
-Editor Draft — 4 April 2014
+<h2 class="no-num no-toc" id="editor-draft-—-5-april-2014">
+Editor Draft — 5 April 2014
 </h2>
 <dl>
 <dt>
@@ -329,7 +329,8 @@ scheduled time is in the future.
 </li>
 <li>If an error occurs, run these substeps and then terminate these steps:
 <ol>
-<li>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.
+<li>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
+returned.
 </li>
 <li>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.
 </li>
@@ -364,9 +365,9 @@ will be executed as soon as possible, asynchronously. The system <em class="ct">
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
 <ol>
 <li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"QuotaExceededError"</code> if the
-<code>data</code> argument exceeds an implementation-dependent size limit, and <code>"UnknownError"</code>
-otherwise.</span>
+<span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is
+<code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds an implementation-dependent size limit, or
+whose <code>name</code> is the same as the error returned otherwise.</span>
 </li>
 <li>
 <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
@@ -413,7 +414,8 @@ registered task.</span>
 <span>If an error occurs, run these substeps and then terminate these steps:</span>
 <ol>
 <li>
-<span>Let <em>error</em> be a new <code>DOMError</code> object whose name is <code>"UnknownError"</code>.</span>
+<span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
+returned.</span>
 </li>
 <li>
 <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
