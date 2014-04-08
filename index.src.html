@@ -223,15 +223,12 @@ Below is a summary of requirements associated with this API:
 </li>
 <li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
 </li>
-<li>A scheduled task <em class="ct">must</em> automatically be restored upon system restart.
+<li>A scheduled task <em class="ct">must</em> persist if the system is restarted.
 </li>
 <li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
 </li>
-<li>A scheduled task that was supposed to trigger when the system was off <em class="ct">must</em> be executed
-immediately after the system's next start up.
-</li>
-<li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
-time.
+<li>A scheduled task that was missed (e.g. because the device was off or the clock jumped past it) should be fired as
+soon as possible.
 </li>
 <li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
 is uninstalled.
