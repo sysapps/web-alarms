@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-5-april-2014">
-Editor Draft — 5 April 2014
+<h2 class="no-num no-toc" id="editor-draft-—-10-october-2014">
+Editor Draft — 10 October 2014
 </h2>
 <dl>
 <dt>
@@ -49,15 +49,9 @@ This version:
 <dd>
 <!--begin-link--><a href="http://www.w3.org/2012/sysapps/web-alarms/">http://www.w3.org/2012/sysapps/web-alarms/</a><!--end-link-->
 </dd>
-<dt class="dontpublish">
-Participate:
-</dt>
-<dd class="dontpublish">
-<a href="mailto:public-sysapps@w3.org?subject=%5Bweb-alarms%5D%20">public-sysapps@w3.org</a> (<a href="http://lists.w3.org/Archives/Public/public-sysapps/">archives</a>)
-</dd>
-<dd class="dontpublish">
-<a href="https://github.com/sysapps/web-alarms/issues/new">File a bug</a>
-</dd>
+
+
+
 <dt>
 Latest published version:
 </dt>
@@ -80,14 +74,15 @@ Previous versions:
 Editors:
 </dt>
 <dd class="vcard">
-<span class="fn">Christophe Dumez</span>, <span class="org"><a href="http://www.samsung.com/sec">Samsung Electronics,
-Co., Ltd</a></span>, <span class="email"><a href="mailto:ch.dumez@samsung.com">ch.dumez@samsung.com</a></span>
+<span class="fn">Mahesh Kulkarni</span>, <span class="org"><a href="http://www.samsung.com/sec">Samsung Electronics,
+Co., Ltd</a></span>, <span class="email"><a href="mailto:mahesh.kk@samsung.com">mahesh.kk@samsung.com</a></span>
+<span class="fn">Christophe Dumez</span>
 </dd>
 </dl>
 <div class="w3conly">
 
 <!--begin-copyright-->
-<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2014 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2014 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 <!--end-copyright-->
 </div>
 </div>
@@ -96,15 +91,15 @@ Abstract
 </h2>
 <p>
 This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
-application that scheduled the task will be notified via a system message. If the application is not running when this
-happens, the system message will cause the application will be launched. Applications such as an alarm clock or an
+application that scheduled the task will be notified via a system message. System message will be delivered to Service Worker, regardless
+of whether the application is active on user agent. Applications such as an alarm clock or an
 auto-updater may utilize this API to perform some action at a specified time.
 </p>
 <h2 class="no-num no-toc" id="toc">
 Table of Contents
 </h2>
 <!--begin-toc-->
-<ol class="toc">
+<ul class="toc">
  <li><a href="#introduction"><span class="secno">1 </span>
 Introduction
 </a></li>
@@ -120,25 +115,29 @@ Requirements
  <li><a href="#task-scheduler-api"><span class="secno">5 </span>
 Task Scheduler API
 </a>
-  <ol class="toc">
-   <li><a href="#interface-navigator"><span class="secno">5.1 </span>
-Interface <code title="">Navigator</code>
+  <ul class="toc">
+   <li><a href="#interface-serviceworkerregistration"><span class="secno">5.1 </span>
+Interface <code title="">ServiceWorkerRegistration</code>
 </a></li>
    <li><a href="#interface-taskscheduler"><span class="secno">5.2 </span>
 Interface <code title="">TaskScheduler</code>
 </a></li>
    <li><a href="#interface-scheduledtask"><span class="secno">5.3 </span>
 <span>Interface <code title="">ScheduledTask</code></span>
-</a></li>
-   <li><a href="#the-task-system-message"><span class="secno">5.4 </span>
-The <code title="task-system-message">task</code> system message
-</a></ol></li>
+</a></ul></li>
+ <li><a href="#events"><span class="secno">6 </span>
+Events
+</a>
+  <ul class="toc">
+   <li><a href="#the-task-event"><span class="secno">6.1 </span>
+The <code title="task-system-message">task</code> event
+</a></ul></li>
  <li><a class="no-num" href="#references">
 References
 </a></li>
  <li><a class="no-num" href="#acknowledgments">
 Acknowledgments
-</a></ol>
+</a></ul>
 <!--end-toc-->
 <h2 id="introduction"><span class="secno">1 </span>
 Introduction
@@ -153,22 +152,37 @@ Example use of the ScheduledTask API for adding, getting and removing and listen
 <p>
 How to set an alarm 10 minutes from now?
 </p>
-<pre>function onTaskAdded(task) {
-  console.log(task.data.message);
+<pre>// https://example.com/serviceworker.js
+this.ontask = function(task) {
+  alert(task.data.message);
+  console.log("Task scheduled at: " + new Date(task.time));
+  // From here we can write the data to IndexedDB, send it to any open windows,
+  // display a notification, etc.
+}
+
+// https://example.com/webapp.js
+function onTaskAdded(task) {
+  console.log("Task successfully scheduled.");
 }
 function onError(error) {
   alert("Sorry, couldn't set the alarm: " + error);
 }
 
-navigator.taskScheduler.add(Date.now() + (10 * 60000), {
-  message: "It's been 10 minutes, your soup is ready!"
-}).then(onTaskAdded, onError);
+navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
+  serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
+    message: "It's been 10 minutes, your soup is ready!"
+  }).then(onTaskAdded, onError);
+});
 </pre>
 <p>
 How to get all the scheduled tasks whose time is in the future?
 </p>
-<pre>navigator.taskScheduler.getPendingTasks().then(function(tasks) {
-  alert("There are " + tasks.length + " tasks set."));
+<pre>navigator.serviceWorker.getRegistration().then(function(registration) {
+  registration.taskScheduler.getPendingTasks().then(function(tasks) {
+    alert("There are " + tasks.length + " tasks set.");
+  }, function(error) {
+    alert("An error occurred getting the scheduled tasks.");
+  });
 }, function(error) {
     alert("An error occurred getting the scheduled tasks.");
 });
@@ -176,26 +190,15 @@ How to get all the scheduled tasks whose time is in the future?
 <p>
 How to remove a scheduled task?
 </p>
-<pre>var request = navigator.taskScheduler.remove(id).then(function() {
-  alert("Task removed");
+<pre>navigator.serviceWorker.getRegistration().then(function(registration) {
+  var request = registration.taskScheduler.remove(id).then(function() {
+    alert("Task removed");
+  }, function(error) {
+    alert("Sorry, can't remove the task.");
+  });
 }, function(error) {
-  alert("Sorry, can't remove the task.");
+    alert("An error occurred getting the scheduled tasks.");
 });
-</pre>
-<p>
-How to register a listener for an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <a href="#system-message">system message</a>?
-</p>
-<pre>function onScheduledTaskFired(task) {
-  alert("task scheduled at: " + new Date(task.time));
-}
-navigator.setMessageHandler("task", onScheduledTaskFired);
-</pre>
-<p>
-How to know in advance if there exists any pending <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <a href="#system-message">system
-message</a>?
-</p>
-<pre>if (navigator.hasPendingMessages("task"))
-  alert("There is at least 1 pending 'task' system message.");
 </pre>
 </div>
 <h2 id="conformance"><span class="secno">2 </span>
@@ -242,6 +245,11 @@ types</a></dfn> are defined in <a href="#refsHTML5">[HTML5]</a>.
 The term <dfn id="system-message"><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in
 <a href="#refsRUNTIME">[RUNTIME]</a>.
 </p>
+<p>
+<dfn id="dfn-service-worker">Service Worker</dfn>, <dfn id="dfn-serviceworkerregistration">ServiceWorkerRegistration</dfn>,
+<dfn id="dfn-serviceworkerglobalscope">ServiceWorkerGlobalScope</dfn>, and <dfn id="dfn-extendableevent">ExtendableEvent</dfn> are defined in
+<a href="#refsSERVICE-WORKERS">[SERVICE-WORKERS]</a>.
+</p>
 <h2 id="requirements"><span class="secno">4 </span>
 Requirements
 </h2>
@@ -263,8 +271,7 @@ immediately after the system's next start up.
 <li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
 time.
 </li>
-<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
-is uninstalled.
+<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application's service worker registration is uninstalled.
 </li>
 </ol>
 <h2 id="task-scheduler-api"><span class="secno">5 </span>
@@ -283,22 +290,26 @@ The task scheduler supports the following features:
 </li>
 <li>Web applications can pass a <a href="#json-serializable-object">JSON-serializable object</a> to describe more details about each task setting.
 </li>
-<li>When a scheduled time is reached, an <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system message</a></code> is
+<li>When a scheduled time is reached, an <code title="task-system-message"><a href="#the-task-event">task</a></code> <code><a href="#system-message">system message</a></code> is
 sent to the application.
 </li>
 <li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
 system from sleeping and scheduled task are not lost when closing the application or restarting the system.
 </li>
 </ul>
-<h3 id="interface-navigator"><span class="secno">5.1 </span>
-Interface <code title="">Navigator</code>
+<h3 id="interface-serviceworkerregistration"><span class="secno">5.1 </span>
+Interface <code title="">ServiceWorkerRegistration</code>
 </h3>
-<pre class="idl">partial interface Navigator {
-  readonly attribute <a href="#taskscheduler">TaskScheduler</a> <a href="#navigator-taskscheduler" title="Navigator-taskScheduler">taskScheduler</a>;
+<p>
+The Service Worker specification defines a <code><a href="#dfn-serviceworkerregistration">ServiceWorkerRegistration</a></code> interface
+<a href="#refsSERVICE-WORKERS">[SERVICE-WORKERS]</a>, which this specification extends.
+</p>
+<pre class="idl">partial interface ServiceWorkerRegistration {
+  readonly attribute <a href="#taskscheduler">TaskScheduler</a> <a href="#serviceworkerregistration-taskscheduler" title="ServiceWorkerRegistration-taskScheduler">taskScheduler</a>;
 }
 </pre>
 <p>
-The <dfn id="navigator-taskscheduler" title="Navigator-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
+The <dfn id="serviceworkerregistration-taskscheduler" title="ServiceWorkerRegistration-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
 <code><a href="#taskscheduler">TaskScheduler</a></code>.
 </p>
 <h3 id="interface-taskscheduler"><span class="secno">5.2 </span>
@@ -307,7 +318,7 @@ Interface <code title="">TaskScheduler</code>
 <p>
 The <code><a href="#taskscheduler">TaskScheduler</a></code> interface exposes methods to get, set or remove scheduled tasks. ScheduledTasks are
 application specific, so there is no way to see the tasks scheduled by other applications nor to modify them.
-Developers should set a message handler for the <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system
+Developers should set a message handler for the <code title="task-system-message"><a href="#the-task-event">task</a></code> <code><a href="#system-message">system
 message</a></code> to listen for when scheduled tasks should be executed.
 </p>
 <pre class="idl">interface <dfn id="taskscheduler">TaskScheduler</dfn> {
@@ -464,15 +475,29 @@ fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, 
 The <dfn id="scheduledtask-data" title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
 data</span> associated with the task.
 </p>
-<h3 id="the-task-system-message"><span class="secno">5.4 </span>
-The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> system message
-</h3>
+<h2 id="events"><span class="secno">6 </span>
+Events
+</h2>
 <p>
-An <code title="task-system-message"><a href="#the-task-system-message">task</a></code> <code><a href="#system-message">system message</a></code> is fired when a scheduled task should be
-executed. This event is originated from the system and will wake up the application if it is not currently running.
+The Service Worker specification defines a <code><a href="#dfn-serviceworkerglobalscope">ServiceWorkerGlobalScope</a></code> interface
+<a href="#refsSERVICE-WORKERS">[SERVICE-WORKERS]</a>, which this specification extends.
+</p>
+<pre class="idl">partial interface <a class="idlInterfaceID" href="#dfn-serviceworkerglobalscope">ServiceWorkerGlobalScope</a> {
+ attribute EventHandler <a href="#the-task-event" title="task-system-message">ontask</a>;
+};</pre>
+<h3 id="the-task-event"><span class="secno">6.1 </span>
+The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> event
+</h3>
+The TaskEvent interface represents firing of scheduled task.
+<pre class="idl">interface TaskEvent : <a class="internalDFN" href="#dfn-extendableevent">ExtendableEvent</a> {
+ readonly attribute <a href="#scheduledtask" title="ScheduledTask">ScheduledTask</a> <a href="#scheduledtask" title="ScheduledTask">task</a>;
+};</pre>
+<p>
+An <code title="task-system-message"><a href="#the-task-event">task</a></code> <code><a href="#system-message">system message</a></code> is fired when a scheduled task should be
+executed. This event is originated from the system and will wake up the service worker if it is not currently running.
 </p>
 <p>
-The developer should set message handler for the <code title="task-system-message"><a href="#the-task-system-message">task</a></code> system message to listen
+The developer should register for <code title="task-system-message"><a href="#the-task-event">task</a></code> event to listen
 for when scheduled tasks should be executed. The <code><a href="#scheduledtask">ScheduledTask</a></code> that was went off will be passed in
 argument to the system message callback.
 </p>
@@ -493,6 +518,9 @@ References
 
 <dt id="refsRUNTIME">[RUNTIME]
 <dd><cite><a href="http://www.w3.org/TR/runtime">Runtime and Security Model for Web Applications</a></cite>, Mounir Lamouri and Ming Jin. W3C.
+
+<dt id="refsSERVICE-WORKERS">[SERVICE-WORKERS]
+<dd><cite><a href="http://www.w3.org/TR/service-workers/">Service Workers</a></cite>, Alex Russell and Jungkee Song. W3C.
 
 <dt id="refsWEBIDL">[WEBIDL]
 <dd><cite><a href="http://dev.w3.org/2006/webapi/WebIDL/">Web IDL</a></cite>, Cameron McCormack. W3C.
