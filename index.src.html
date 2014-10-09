@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html://github.com/sysapps/web-alarms.git>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -94,8 +94,8 @@ Abstract
 </h2>
 <p>
 This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
-application that scheduled the task will be notified via a system message. If the application is not running when this
-happens, the system message will cause the application will be launched. Applications such as an alarm clock or an
+application that scheduled the task will be notified via a system message. System message will be delivered to Service Worker, regardless
+of whether the application is active on user agent. Applications such as an alarm clock or an
 auto-updater may utilize this API to perform some action at a specified time.
 </p>
 <h2 class="no-num no-toc" id="toc">
@@ -115,23 +115,39 @@ Example use of the ScheduledTask API for adding, getting and removing and listen
 How to set an alarm 10 minutes from now?
 </p>
 <pre>
+// System message listener for an "task"
+// https://example.com/serviceworker.js
+this.ontask = function(task) {
+  alert(task.data.message);
+  console.log("Task scheduled at: " + new Date(task.time));
+  // From here we can write the data to IndexedDB, send it to any open windows,
+  // display a notification, etc.
+}
+
+// https://example.com/webapp.js
 function onTaskAdded(task) {
-  console.log(task.data.message);
+  console.log("Task successfully scheduled.");
 }
 function onError(error) {
   alert("Sorry, couldn't set the alarm: " + error);
 }
 
-navigator.taskScheduler.add(Date.now() + (10 * 60000), {
-  message: "It's been 10 minutes, your soup is ready!"
-}).then(onTaskAdded, onError);
+navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
+  serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
+    message: "It's been 10 minutes, your soup is ready!"
+  }).then(onTaskAdded, onError);
+});
 </pre>
 <p>
 How to get all the scheduled tasks whose time is in the future?
 </p>
 <pre>
-navigator.taskScheduler.getPendingTasks().then(function(tasks) {
-  alert("There are " + tasks.length + " tasks set."));
+navigator.serviceWorker.getRegistration().then(function(registration) {
+  registration.taskScheduler.getPendingTasks().then(function(tasks) {
+    alert("There are " + tasks.length + " tasks set.");
+  }, function(error) {
+    alert("An error occurred getting the scheduled tasks.");
+  });
 }, function(error) {
     alert("An error occurred getting the scheduled tasks.");
 });
@@ -140,28 +156,15 @@ navigator.taskScheduler.getPendingTasks().then(function(tasks) {
 How to remove a scheduled task?
 </p>
 <pre>
-var request = navigator.taskScheduler.remove(id).then(function() {
-  alert("Task removed");
+navigator.serviceWorker.getRegistration().then(function(registration) {
+  var request = registration.taskScheduler.remove(id).then(function() {
+    alert("Task removed");
+  }, function(error) {
+    alert("Sorry, can't remove the task.");
+  });
 }, function(error) {
-  alert("Sorry, can't remove the task.");
+    alert("An error occurred getting the scheduled tasks.");
 });
-</pre>
-<p>
-How to register a listener for an <code title="task-system-message">task</code> <span>system message</span>?
-</p>
-<pre>
-function onScheduledTaskFired(task) {
-  alert("task scheduled at: " + new Date(task.time));
-}
-navigator.setMessageHandler("task", onScheduledTaskFired);
-</pre>
-<p>
-How to know in advance if there exists any pending <code title="task-system-message">task</code> <span>system
-message</span>?
-</p>
-<pre>
-if (navigator.hasPendingMessages("task"))
-  alert("There is at least 1 pending 'task' system message.");
 </pre>
 </div>
 <h2 id="conformance">
@@ -212,6 +215,11 @@ types</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
 The term <dfn><a href="http://www.w3.org/TR/runtime/#system-messages">system message</a></dfn> is defined in
 <span data-anolis-ref="">RUNTIME</span>.
 </p>
+<p>
+<dfn id="dfn-service-worker">Service Worker</dfn>, <dfn id="dfn-serviceworkerregistration">ServiceWorkerRegistration</dfn>,
+<dfn id="dfn-serviceworkerglobalscope">ServiceWorkerGlobalScope</dfn>, and <dfn id="dfn-extendableevent">ExtendableEvent</dfn> are defined in
+[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>].
+</p>
 <h2 id="requirements">
 Requirements
 </h2>
@@ -233,8 +241,7 @@ immediately after the system's next start up.
 <li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
 time.
 </li>
-<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
-is uninstalled.
+<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application's service worker registration is uninstalled.
 </li>
 </ol>
 <h2>
@@ -263,8 +270,12 @@ system from sleeping and scheduled task are not lost when closing the applicatio
 <h3>
 Interface <code title="">Navigator</code>
 </h3>
+<p>
+The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
+[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>], which this specification extends.
+</p>
 <pre class="idl">
-partial interface Navigator {
+partial interface ServiceWorkerRegistration {
   readonly attribute <span>TaskScheduler</span> <span title="Navigator-taskScheduler">taskScheduler</span>;
 }
 </pre>
@@ -439,15 +450,31 @@ fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, 
 The <dfn title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
 data</span> associated with the task.
 </p>
+<h2>
+Events
+</h2>
+<p>
+The Service Worker specification defines a <code>ServiceWorkerGlobalScope</code> interface
+[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>], which this specification extends.
+</p>
+<pre class="idl">
+partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
+ attribute EventHandler <span title="task-system-message">ontask</span>;
+};</pre>
 <h3>
-The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> system message
+The <dfn title="task-system-message"><code title="task-system-message">task</code></dfn> event
 </h3>
+The TaskEvent interface represents firing of scheduled task.
+<pre class="idl">
+interface <span class="idlInterfaceID">TaskEvent</span> : <span class="idlSuperclass"><a href="#dfn-extendableevent" class="internalDFN">ExtendableEvent</a></span> {
+ readonly attribute <code>ScheduledTask</span> <span class="idlAttrName"><code title"ScheduledTask">data</code></span>;
+};</span></pre>
 <p>
 An <code title="task-system-message">task</code> <code>system message</code> is fired when a scheduled task should be
-executed. This event is originated from the system and will wake up the application if it is not currently running.
+executed. This event is originated from the system and will wake up the service worker if it is not currently running.
 </p>
 <p>
-The developer should set message handler for the <code title="task-system-message">task</code> system message to listen
+The developer should register for <code title="task-system-message">task</code> event to listen
 for when scheduled tasks should be executed. The <code>ScheduledTask</code> that was went off will be passed in
 argument to the system message callback.
 </p>
