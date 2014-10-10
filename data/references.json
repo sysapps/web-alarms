@@ -344,6 +344,12 @@
     "authors" : ["Elika J. Etemad"],
     "publisher" : "W3C"
   },
+  "SERVICE-WORKERS": {
+    "href" : "http://www.w3.org/TR/service-workers/",
+    "title" : "Service Workers",
+    "authors" : ["Alex Russell", "Jungkee Song"],
+    "publisher" : "W3C"
+  },
   "STREAMS" : {
     "href": "http://dvcs.w3.org/hg/streams-api/raw-file/tip/Overview.htm",
     "title":"Streams API",
