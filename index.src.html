@@ -122,58 +122,58 @@
             How to set an alarm 10 minutes from now?
         </p>
         <pre>
-            // https://example.com/serviceworker.js
-            this.ontask = function(task) {
-                alert(task.data.message);
-                console.log("Task scheduled at: " + new Date(task.time));
-                // From here on we can write the data to IndexedDB, send it to any open windows,
-                // display a notification, etc.
-            }
+    // https://example.com/serviceworker.js
+    this.ontask = function(task) {
+        alert(task.data.message);
+        console.log("Task scheduled at: " + new Date(task.time));
+        // From here on we can write the data to IndexedDB, send it to any open windows,
+        // display a notification, etc.
+    }
 
-            // https://example.com/webapp.js
-            function onTaskAdded(task) {
-                console.log("Task successfully scheduled.");
-            }
+    // https://example.com/webapp.js
+    function onTaskAdded(task) {
+        console.log("Task successfully scheduled.");
+    }
 
-            function onError(error) {
-                alert("Sorry, couldn't set the alarm: " + error);
-            }
+    function onError(error) {
+        alert("Sorry, couldn't set the alarm: " + error);
+    }
 
-            navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
-                serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
-                    message: "It's been 10 minutes, your soup is ready!"
-                }).then(onTaskAdded, onError);
-            });
+    navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
+        serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
+            message: "It's been 10 minutes, your soup is ready!"
+        }).then(onTaskAdded, onError);
+    });
         </pre>
 
         <p>
             How to get all the scheduled tasks whose time is in the future?
         </p>
         <pre>
-            navigator.serviceWorker.getRegistration().then(function(registration) {
-                registration.taskScheduler.getPendingTasks().then(function(tasks) {
-                    alert("There are " + tasks.length + " tasks set.");
-                }, function(error) {
-                    alert("An error occurred getting the scheduled tasks.");
-                });
-            }, function(error) {
-                alert("An error occurred getting the scheduled tasks.");
-            });
+    navigator.serviceWorker.getRegistration().then(function(registration) {
+        registration.taskScheduler.getPendingTasks().then(function(tasks) {
+            alert("There are " + tasks.length + " tasks set.");
+        }, function(error) {
+            alert("An error occurred getting the scheduled tasks.");
+        });
+    }, function(error) {
+        alert("An error occurred getting the scheduled tasks.");
+    });
         </pre>
 
         <p>
             How to remove a scheduled task?
         </p>
         <pre>
-            navigator.serviceWorker.getRegistration().then(function(registration) {
-                var request = registration.taskScheduler.remove(id).then(function() {
-                    alert("Task removed");
-                    }, function(error) {
-                        alert("Sorry, can't remove the task.");
-                    });
-                }, function(error) {
-                    alert("An error occurred getting the scheduled tasks.");
-                });
+    navigator.serviceWorker.getRegistration().then(function(registration) {
+        var request = registration.taskScheduler.remove(id).then(function() {
+                alert("Task removed");
+            }, function(error) {
+                alert("Sorry, can't remove the task.");
+            });
+    }, function(error) {
+        alert("An error occurred getting the scheduled tasks.");
+    });
         </pre>
     </div>
 
@@ -282,10 +282,9 @@
         <span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
     </p>
     <pre class="idl">
-        partial interface <span>ServiceWorkerRegistration</span> {
-            readonly attribute <span>TaskScheduler</span> <span title="ServiceWorkerRegistration-taskScheduler">taskScheduler</span>;
-        }
-    </pre>
+partial interface <span>ServiceWorkerRegistration</span> {
+    readonly attribute <span>TaskScheduler</span> <span title="ServiceWorkerRegistration-taskScheduler">taskScheduler</span>;
+}</pre>
     <p>
         The <dfn title="ServiceWorkerRegistration-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
         <code>TaskScheduler</code>.
@@ -299,12 +298,11 @@
         Developers should set an <a href="#ontask-event-handler">ontask</a> event handler in the associated <span>service worker</span> to listen for the <code title="task-system-message">task</code> event when scheduled tasks should be executed.
     </p>
     <pre class="idl">
-        interface <dfn>TaskScheduler</dfn> {
-            <span>Promise</span> <span title="TaskScheduler-getPendingTasks">getPendingTasks</span>();
-            <span>Promise</span> <span title="TaskScheduler-add">add</span>(DOMTimeStamp <var title="">time</var>, optional any <var title="">data</var>);
-            <span>Promise</span> <span title="TaskScheduler-remove">remove</span>(DOMString <var title="">taskId</var>);
-        };
-    </pre>
+interface <dfn>TaskScheduler</dfn> {
+    <span>Promise</span> <span title="TaskScheduler-getPendingTasks">getPendingTasks</span>();
+    <span>Promise</span> <span title="TaskScheduler-add">add</span>(DOMTimeStamp <var title="">time</var>, optional any <var title="">data</var>);
+    <span>Promise</span> <span title="TaskScheduler-remove">remove</span>(DOMString <var title="">taskId</var>);
+};</pre>
     <p>
         When invoked, the <dfn title="TaskScheduler-getPendingTasks"><code>getPendingTasks()</code></dfn> method <em class=
         "ct">must</em> run the following steps:
@@ -437,12 +435,11 @@
         <span>The <code>ScheduledTask</code> interface captures the properties of a scheduled task.</span>
     </p>
     <pre class="idl">
-        <span>interface <dfn>ScheduledTask</dfn> {
-            readonly attribute DOMString <span title="ScheduledTask-id">id</span>;
-            readonly attribute DOMTimeStamp <span title="ScheduledTask-time">time</span>;
-            readonly attribute any <span title="ScheduledTask-data">data</span>;
-        };</span>
-    </pre>
+<span>interface <dfn>ScheduledTask</dfn> {
+    readonly attribute DOMString <span title="ScheduledTask-id">id</span>;
+    readonly attribute DOMTimeStamp <span title="ScheduledTask-time">time</span>;
+    readonly attribute any <span title="ScheduledTask-data">data</span>;
+};</span></pre>
     <p>
         The <dfn title="ScheduledTask-id"><code>id</code></dfn> attribute returns an identifier for the given
         <code>ScheduledTask</code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain
@@ -464,9 +461,9 @@
         <span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
     </p>
     <pre class="idl">
-        partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
-        attribute EventHandler <span title="task-system-message"><a href="#ontask-event-handler">ontask</a></span>;
-    };</pre>
+partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
+    attribute EventHandler <span title="task-system-message"><a href="#ontask-event-handler">ontask</a></span>;
+};</pre>
 
     <h3>
         Event Handler
@@ -492,10 +489,9 @@
 
     <p> The <code>TaskEvent</code> interface represents a scheduled task. </p>
     <pre class="idl">
-        interface <dfn>TaskEvent</dfn> : <span>ExtendableEvent</span> {
-            readonly attribute <span title="ScheduledTask">ScheduledTask</span> <span title="ScheduledTask">task</span>;
-        };</span>
-    </pre>
+interface <dfn>TaskEvent</dfn> : <span>ExtendableEvent</span> {
+    readonly attribute <span title="ScheduledTask">ScheduledTask</span> <span title="ScheduledTask">task</span>;
+};</span></pre>
     <p>
         <h3>
             Firing <code>task</code> event to service worker
