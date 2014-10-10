@@ -1,4 +1,4 @@
-<!DOCTYPE html://github.com/sysapps/web-alarms.git>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -218,7 +218,7 @@ The term <dfn><a href="http://www.w3.org/TR/runtime/#system-messages">system mes
 <p>
 <dfn id="dfn-service-worker">Service Worker</dfn>, <dfn id="dfn-serviceworkerregistration">ServiceWorkerRegistration</dfn>,
 <dfn id="dfn-serviceworkerglobalscope">ServiceWorkerGlobalScope</dfn>, and <dfn id="dfn-extendableevent">ExtendableEvent</dfn> are defined in
-[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>].
+<span data-anolis-ref="">SERVICE-WORKERS</span>.
 </p>
 <h2 id="requirements">
 Requirements
@@ -268,19 +268,19 @@ system from sleeping and scheduled task are not lost when closing the applicatio
 </li>
 </ul>
 <h3>
-Interface <code title="">Navigator</code>
+Interface <code title="">ServiceWorkerRegistration</code>
 </h3>
 <p>
 The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
-[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>], which this specification extends.
+<span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
 </p>
 <pre class="idl">
 partial interface ServiceWorkerRegistration {
-  readonly attribute <span>TaskScheduler</span> <span title="Navigator-taskScheduler">taskScheduler</span>;
+  readonly attribute <span>TaskScheduler</span> <span title="ServiceWorkerRegistration-taskScheduler">taskScheduler</span>;
 }
 </pre>
 <p>
-The <dfn title="Navigator-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
+The <dfn title="ServiceWorkerRegistration-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
 <code>TaskScheduler</code>.
 </p>
 <h3>
@@ -455,7 +455,7 @@ Events
 </h2>
 <p>
 The Service Worker specification defines a <code>ServiceWorkerGlobalScope</code> interface
-[<cite><a class="bibref" href="#bib-SERVICE-WORKERS">SERVICE-WORKERS</a></cite>], which this specification extends.
+<span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
 </p>
 <pre class="idl">
 partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
@@ -466,8 +466,8 @@ The <dfn title="task-system-message"><code title="task-system-message">task</cod
 </h3>
 The TaskEvent interface represents firing of scheduled task.
 <pre class="idl">
-interface <span class="idlInterfaceID">TaskEvent</span> : <span class="idlSuperclass"><a href="#dfn-extendableevent" class="internalDFN">ExtendableEvent</a></span> {
- readonly attribute <code>ScheduledTask</span> <span class="idlAttrName"><code title"ScheduledTask">data</code></span>;
+interface TaskEvent : <a href="#dfn-extendableevent" class="internalDFN">ExtendableEvent</a> {
+ readonly attribute <span title="ScheduledTask">ScheduledTask</span> <span title="ScheduledTask">task</span>;
 };</span></pre>
 <p>
 An <code title="task-system-message">task</code> <code>system message</code> is fired when a scheduled task should be
