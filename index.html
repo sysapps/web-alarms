@@ -39,8 +39,8 @@ Task Scheduler API Specification
 Task Scheduler API Specification
 
 </h1>
-<h2 class="no-num no-toc" id="editor-draft-—-5-april-2014">
-Editor Draft — 5 April 2014
+<h2 class="no-num no-toc" id="editor-draft-—-10-october-2014">
+Editor Draft — 10 October 2014
 </h2>
 <dl>
 <dt>
@@ -87,7 +87,7 @@ Co., Ltd</a></span>, <span class="email"><a href="mailto:ch.dumez@samsung.com">c
 <div class="w3conly">
 
 <!--begin-copyright-->
-<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2014 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2014 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 <!--end-copyright-->
 </div>
 </div>
@@ -253,15 +253,12 @@ Below is a summary of requirements associated with this API:
 </li>
 <li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
 </li>
-<li>A scheduled task <em class="ct">must</em> automatically be restored upon system restart.
+<li>A scheduled task <em class="ct">must</em> persist if the system is restarted.
 </li>
 <li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
 </li>
-<li>A scheduled task that was supposed to trigger when the system was off <em class="ct">must</em> be executed
-immediately after the system's next start up.
-</li>
-<li>A scheduled task <em class="ct">must</em> trigger immediately if the system's clock jumps past the task's scheduled
-time.
+<li>A scheduled task that was missed (e.g. because the device was off or the clock jumped past it) should be fired as
+soon as possible.
 </li>
 <li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application that scheduled it
 is uninstalled.
