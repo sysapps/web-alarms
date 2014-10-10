@@ -1,517 +1,526 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>
-Task Scheduler API Specification
-</title>
-<style type="text/css">
-   pre.idl { border:solid thin; background:#eee; color:#000; padding:0.5em }
-   pre.idl :link, pre.idl :visited { color:inherit; background:transparent }
-   pre code { color:inherit; background:transparent }
-   div.example { margin-left:1em; padding-left:1em; border-left:double; color:#222; background:#fcfcfc }
-   .note { margin-left:2em; font-weight:bold; font-style:italic; color:#008000 }
-   p.note::before { content:"Note: " }
-   .XXX { padding:.5em; border:solid #f00 }
-   p.XXX::before { content:"Issue: " }
-   dl.switch { padding-left:2em }
-   dl.switch > dt { text-indent:-1.5em }
-   dl.switch > dt:before { content:'\21AA'; padding:0 0.5em 0 0; display:inline-block; width:1em; text-align:right; line-height:0.5em }
-   dl.domintro { color: green; margin: 2em 0 2em 2em; padding: 0.5em 1em; border: none; background: #DDFFDD; }
-   dl.domintro dt, dl.domintro dt * { color: black; text-decoration: none; }
-   dl.domintro dd { margin: 0.5em 0 1em 2em; padding: 0; }
-   dl.domintro dd p { margin: 0.5em 0; }
-   dl.domintro:before { display: table; margin: -1em -0.5em -0.5em auto; width: auto; content: 'This box is non-normative. Implementation requirements are given below this box.'; color: red; border: solid 2px; background: white; padding: 0 0.25em; }
-   em.ct { text-transform:lowercase; font-variant:small-caps; font-style:normal }
-   dfn { font-weight:bold; font-style:normal }
-   code { color:orangered }
-   code :link, code :visited { color:inherit }
-   hr:not(.top) { display:block; background:none; border:none; padding:0; margin:2em 0; height:auto }
-   table { border-collapse:collapse; border-style:hidden hidden none hidden }
-   table thead { border-bottom:solid }
-   table tbody th:first-child { border-left:solid }
-   table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
-</style>
-<link rel="stylesheet" href="http://www.w3.org/StyleSheets/TR/W3C-[STATUS]" type="text/css">
+    <meta charset="utf-8">
+    <title>
+        Task Scheduler API Specification
+    </title>
+    <style type="text/css">
+        pre.idl { border:solid thin; background:#eee; color:#000; padding:0.5em }
+        pre.idl :link, pre.idl :visited { color:inherit; background:transparent }
+        pre code { color:inherit; background:transparent }
+        div.example { margin-left:1em; padding-left:1em; border-left:double; color:#222; background:#fcfcfc }
+        .note { margin-left:2em; font-weight:bold; font-style:italic; color:#008000 }
+        p.note::before { content:"Note: " }
+        .XXX { padding:.5em; border:solid #f00 }
+        p.XXX::before { content:"Issue: " }
+        dl.switch { padding-left:2em }
+        dl.switch > dt { text-indent:-1.5em }
+        dl.switch > dt:before { content:'\21AA'; padding:0 0.5em 0 0; display:inline-block; width:1em; text-align:right; line-height:0.5em }
+        dl.domintro { color: green; margin: 2em 0 2em 2em; padding: 0.5em 1em; border: none; background: #DDFFDD; }
+        dl.domintro dt, dl.domintro dt * { color: black; text-decoration: none; }
+        dl.domintro dd { margin: 0.5em 0 1em 2em; padding: 0; }
+        dl.domintro dd p { margin: 0.5em 0; }
+        dl.domintro:before { display: table; margin: -1em -0.5em -0.5em auto; width: auto; content: 'This box is non-normative. Implementation requirements are given below this box.'; color: red; border: solid 2px; background: white; padding: 0 0.25em; }
+        em.ct { text-transform:lowercase; font-variant:small-caps; font-style:normal }
+        dfn { font-weight:bold; font-style:normal }
+        code { color:orangered }
+        code :link, code :visited { color:inherit }
+        hr:not(.top) { display:block; background:none; border:none; padding:0; margin:2em 0; height:auto }
+        table { border-collapse:collapse; border-style:hidden hidden none hidden }
+        table thead { border-bottom:solid }
+        table tbody th:first-child { border-left:solid }
+        table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
+    </style>
+    <link rel="stylesheet" href="http://www.w3.org/StyleSheets/TR/W3C-[STATUS]" type="text/css">
 </head>
 <body class="draft">
-<div class="head">
-<h1>
-[TITLE]
-</h1>
-<h2 class="no-num no-toc">
-Editor Draft — [DATE]
-</h2>
-<dl>
-<dt>
-This version:
-</dt>
-<dd>
-<!--begin-link-->http://www.w3.org/2012/sysapps/web-alarms/<!--end-link-->
-</dd>
-<dt class="dontpublish">
-Participate:
-</dt>
-<dd class="dontpublish">
-<a href="mailto:public-sysapps@w3.org?subject=%5Bweb-alarms%5D%20">public-sysapps@w3.org</a> (<a href=
-"http://lists.w3.org/Archives/Public/public-sysapps/">archives</a>)
-</dd>
-<dd class="dontpublish">
-<a href="https://github.com/sysapps/web-alarms/issues/new">File a bug</a>
-</dd>
-<dt>
-Latest published version:
-</dt>
-<dd>
-<!--begin-link-->http://www.w3.org/TR/web-alarms/<!--end-link-->
-</dd>
-<dt>
-Latest editor's draft:
-</dt>
-<dd>
-<!--begin-link-->http://www.w3.org/2012/sysapps/web-alarms/<!--end-link-->
-</dd>
-<dt>
-Previous versions:
-</dt>
-<dd>
-<!--begin-link-->http://www.w3.org/TR/2013/WD-web-alarms-20130205/ <!--end-link-->
-</dd>
-<dt>
-Editors:
-</dt>
-<dd class="vcard">
-<span class="fn">Mahesh Kulkarni</span>, <span class="org"><a href="http://www.samsung.com/sec">Samsung Electronics,
-Co., Ltd</a></span>, <span class="email"><a href="mailto:mahesh.kk@samsung.com">mahesh.kk@samsung.com</a></span>
-</dd>
-<dt>
-Former Editors:
-</dt>
-<dd class="vcard">
-<span class="fn">Christophe Dumez</span>, <span class="org"><a href="https://www.apple.com/">Apple
-Inc.</a></span>
-</dd>
-</dl>
-<div class="w3conly">
-<!--copyright-->
-</div>
-</div>
-<h2 class="no-num no-toc" id="specabstract">
-Abstract
-</h2>
-<p>
-This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
-application that scheduled the task will be notified via a functional event on a service worker. A task event will be delivered to a service worker, regardless
-of whether the application is active on user agent. Applications such as an alarm clock or an
-auto-updater may utilize this API to perform certain action at a specified time.
-</p>
-<h2 class="no-num no-toc" id="toc">
-Table of Contents
-</h2><!--toc-->
-<h2 id="introduction">
-Introduction
-</h2>
-<p>
-<em>This section is non-normative.</em>
-</p>
-<div class="example">
-<p>
-Example use of the ScheduledTask API for adding, getting and removing and listening for the alarm clock use cases:
-</p>
-<p>
-How to set an alarm 10 minutes from now?
-</p>
-<pre>
-// https://example.com/serviceworker.js
-this.ontask = function(task) {
-  alert(task.data.message);
-  console.log("Task scheduled at: " + new Date(task.time));
-  // From here on we can write the data to IndexedDB, send it to any open windows,
-  // display a notification, etc.
-}
+    <div class="head">
+        <h1>
+            [TITLE]
+        </h1>
+        <h2 class="no-num no-toc">
+            Editor Draft — [DATE]
+        </h2>
+        <dl>
+            <dt>
+                This version:
+            </dt>
+            <dd>
+                <!--begin-link-->http://www.w3.org/2012/sysapps/web-alarms/<!--end-link-->
+            </dd>
+            <dt class="dontpublish">
+                Participate:
+            </dt>
+            <dd class="dontpublish">
+                <a href="mailto:public-sysapps@w3.org?subject=%5Bweb-alarms%5D%20">public-sysapps@w3.org</a> (<a href=
+                "http://lists.w3.org/Archives/Public/public-sysapps/">archives</a>)
+            </dd>
+            <dd class="dontpublish">
+                <a href="https://github.com/sysapps/web-alarms/issues/new">File a bug</a>
+            </dd>
+            <dt>
+                Latest published version:
+            </dt>
+            <dd>
+                <!--begin-link-->http://www.w3.org/TR/web-alarms/<!--end-link-->
+            </dd>
+            <dt>
+                Latest editor's draft:
+            </dt>
+            <dd>
+                <!--begin-link-->http://www.w3.org/2012/sysapps/web-alarms/<!--end-link-->
+            </dd>
+            <dt>
+                Previous versions:
+            </dt>
+            <dd>
+                <!--begin-link-->http://www.w3.org/TR/2013/WD-web-alarms-20130205/ <!--end-link-->
+            </dd>
+            <dt>
+                Editors:
+            </dt>
+            <dd class="vcard">
+                <span class="fn">Mahesh Kulkarni</span>, <span class="org"><a href="http://www.samsung.com/sec">Samsung Electronics,
+                Co., Ltd</a></span>, <span class="email"><a href="mailto:mahesh.kk@samsung.com">mahesh.kk@samsung.com</a></span>
+            </dd>
+            <dt>
+                Former Editors:
+            </dt>
+            <dd class="vcard">
+                <span class="fn">Christophe Dumez</span>, <span class="org"><a href="https://www.apple.com/">Apple
+                Inc.</a></span>
+            </dd>
+        </dl>
+        <div class="w3conly">
+            <!--copyright-->
+        </div>
+    </div>
+    <h2 class="no-num no-toc" id="specabstract">
+        Abstract
+    </h2>
+    <p>
+        This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
+        application that scheduled the task will be notified via a functional event on a service worker. A task event will be delivered to a service worker, regardless
+        of whether the application is active on user agent. Applications such as an alarm clock or an
+        auto-updater may utilize this API to perform certain action at a specified time.
+    </p>
+    <h2 class="no-num no-toc" id="toc">
+        Table of Contents
+    </h2><!--toc-->
+    <h2 id="introduction">
+        Introduction
+    </h2>
+    <p>
+        <em>This section is non-normative.</em>
+    </p>
+    <div class="example">
+        <p>
+            Example use of the ScheduledTask API for adding, getting and removing and listening for the alarm clock use cases:
+        </p>
+        <p>
+            How to set an alarm 10 minutes from now?
+        </p>
+        <pre>
+            // https://example.com/serviceworker.js
+            this.ontask = function(task) {
+                alert(task.data.message);
+                console.log("Task scheduled at: " + new Date(task.time));
+                // From here on we can write the data to IndexedDB, send it to any open windows,
+                // display a notification, etc.
+            }
 
-// https://example.com/webapp.js
-function onTaskAdded(task) {
-  console.log("Task successfully scheduled.");
-}
-function onError(error) {
-  alert("Sorry, couldn't set the alarm: " + error);
-}
+            // https://example.com/webapp.js
+            function onTaskAdded(task) {
+                console.log("Task successfully scheduled.");
+            }
 
-navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
-  serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
-    message: "It's been 10 minutes, your soup is ready!"
-  }).then(onTaskAdded, onError);
-});
-</pre>
-<p>
-How to get all the scheduled tasks whose time is in the future?
-</p>
-<pre>
-navigator.serviceWorker.getRegistration().then(function(registration) {
-  registration.taskScheduler.getPendingTasks().then(function(tasks) {
-    alert("There are " + tasks.length + " tasks set.");
-  }, function(error) {
-    alert("An error occurred getting the scheduled tasks.");
-  });
-}, function(error) {
-    alert("An error occurred getting the scheduled tasks.");
-});
-</pre>
-<p>
-How to remove a scheduled task?
-</p>
-<pre>
-navigator.serviceWorker.getRegistration().then(function(registration) {
-  var request = registration.taskScheduler.remove(id).then(function() {
-    alert("Task removed");
-  }, function(error) {
-    alert("Sorry, can't remove the task.");
-  });
-}, function(error) {
-  alert("An error occurred getting the scheduled tasks.");
-});
-</pre>
-</div>
-<h2 id="conformance">
-Conformance
-</h2>
-<p>
-This specification defines conformance criteria for a single product: the <dfn id="ua">user agent</dfn> that implements
-the interfaces that it contains.
-</p>
-<p>
-Implementations that use ECMAScript to implement the APIs defined in this specification MUST implement them in a manner
-consistent with the <a href="http://www.w3.org/TR/WebIDL/#ecmascript-binding">ECMAScript Bindings</a> defined in the
-<cite>Web IDL specification</cite> <span data-anolis-ref="">WEBIDL</span>, as this specification uses that
-specification and terminology.
-</p>
-<h2 id="terminology">
-Terminology
-</h2>
-<p>
-A <dfn>JSON-serializable object</dfn> is an <a href=
-"http://dev.w3.org/2006/webapi/WebIDL/#idl-object"><code>object</code></a> that when <a href=
-"http://dev.w3.org/2006/webapi/WebIDL/#idl-stringifiers">serialized</a> or <a href=
-"http://dev.w3.org/2006/webapi/WebIDL/#idl-serializers">stringified</a> conforms to the JSON Grammar as defined in
-<span data-anolis-ref="">ECMASCRIPT</span>.
-</p>
-<p>
-The <dfn><code><a href="http://dev.w3.org/html5/spec/webappapis.html#eventhandler">EventHandler</a></code></dfn>
-interface represents a callback used for handling events as defined in <span data-anolis-ref="">HTML5</span>.
-</p>
-<p>
-The <dfn><code><a href=
-"https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a></code></dfn> interface provides
-asynchronous access to the result of an operation that is ongoing, has yet to start, or has completed, as defined in
-<span data-anolis-ref="">ECMASCRIPT6</span>.
-</p>
-<p>
-The concepts <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#queue-a-task">queue a task</a></dfn>,
-<dfn><a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-handler-idl-attributes">event handler
-IDL attribute</a></dfn> and <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#fire-a-simple-event">fire a
-simple event</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
-</p>
-<p>
-The concepts <dfn><a href="https://dom.spec.whatwg.org/#concept-event">event</a></dfn> and
-<dfn><a href="https://dom.spec.whatwg.org/#concept-event-fire">fire an event named e</a></dfn>are defined in <span data-anolis-ref="">DOM</span>.
-</p>
-<p>
-The terms <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers">event handler</a></dfn> and
-<dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handler-event-type">event handler event
-types</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
-</p>
-<p>
-<dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#dfn-service-worker">Service worker</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#dfn-service-worker-registration">service worker registration</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-interface">ServiceWorker</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-registration-interface">ServiceWorkerRegistration</a></dfn>,
-<dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-interface">ServiceWorkerGlobalScope</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#extendable-event-interface">ExtendableEvent</a></dfn>, and <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#handle-functional-event-algorithm">Handle Functional Event</a></dfn> are defined in
-<span data-anolis-ref="">SERVICE-WORKERS</span>.
-</p>
-<h2 id="requirements">
-Requirements
-</h2>
-<p>
-Below is a summary of requirements associated with this API:
-</p>
-<ol>
-<li>An application <em class="ct">must</em> only be able to access its own scheduled tasks.
-</li>
-<li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
-</li>
-<li>A scheduled task <em class="ct">must</em> persist if the system is restarted.
-</li>
-<li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
-</li>
-<li>A scheduled task that was missed (e.g. because the device was off or the clock jumped past it) should be fired as
-soon as possible.
-</li>
-<li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application's service worker registration is uninstalled.
-</li>
-</ol>
-<h2>
-Task Scheduler API
-</h2>
-<p>
-<em>This section is non-normative.</em>
-</p>
-<p>
-The task scheduler supports the following features:
-</p>
-<ul>
-<li>Web applications can schedule multiple tasks and get a returned ID for each of them.
-</li>
-<li>Each <code>ScheduledTask</code> has a unique identifier that can be used to specify and remove the scheduled task.
-</li>
-<li>Web applications can pass a <span>JSON-serializable object</span> to describe more details about each task setting.
-</li>
-<li>When a scheduled time is reached, an <code title="task-system-message">task</code> event is
-sent to the application.
-</li>
-<li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
-system from sleeping and scheduled task are not lost when closing the application or restarting the system.
-</li>
-</ul>
-<h3>
-Interface <code title="">ServiceWorkerRegistration</code>
-</h3>
-<p>
-The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
-<span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
-</p>
-<pre class="idl">
-partial interface <span>ServiceWorkerRegistration</span> {
-  readonly attribute <span>TaskScheduler</span> <span title="ServiceWorkerRegistration-taskScheduler">taskScheduler</span>;
-}
-</pre>
-<p>
-The <dfn title="ServiceWorkerRegistration-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
-<code>TaskScheduler</code>.
-</p>
-<h3>
-Interface <code title="">TaskScheduler</code>
-</h3>
-<p>
-The <code>TaskScheduler</code> interface exposes methods to get, set or remove scheduled tasks. ScheduledTasks are
-application specific, so there is no way to see the tasks scheduled by other applications nor to modify them.
-Developers should set an <a href="#ontask-event-handler">ontask</a> event handler in the associated <span>service worker</span> to listen for the <code title="task-system-message">task</code> event when scheduled tasks should be executed.
-</p>
-<pre class="idl">
-interface <dfn>TaskScheduler</dfn> {
-  <span>Promise</span> <span title="TaskScheduler-getPendingTasks">getPendingTasks</span>();
-  <span>Promise</span> <span title="TaskScheduler-add">add</span>(DOMTimeStamp <var title=
-"">time</var>, optional any <var title="">data</var>);
-  <span>Promise</span> <span title="TaskScheduler-remove">remove</span>(DOMString <var title="">taskId</var>);
-};
-</pre>
-<p>
-When invoked, the <dfn title="TaskScheduler-getPendingTasks"><code>getPendingTasks()</code></dfn> method <em class=
-"ct">must</em> run the following steps:
-</p>
-<ol>
-<li>Make a request to the system to retrieve the tasks that were registered by the current application and whose
-scheduled time is in the future.
-</li>
-<li>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.
-</li>
-<li>Return <em>promise</em> and run the remaining steps asynchronously.
-</li>
-<li>If an error occurs, run these substeps and then terminate these steps:
-<ol>
-<li>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
-returned.
-</li>
-<li>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.
-</li>
-</ol>
-</li>
-<li>When the operation completes successfully, run these substeps:
-<ol>
-<li>Let <em>tasks</em> be a new array containing the <code>ScheduledTask</code> objects that were retrieved.
-</li>
-<li>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>tasks</em> as <code>value</code>.
-</li>
-</ol>
-</li>
-</ol>
-<p>
-When invoked, the <dfn title="TaskScheduler-add"><code>add(<var>time</var>[, <var>data</var>])</code></dfn> method
-<em class="ct">must</em> run the following steps:
-</p>
-<ol>
-<li>Make a request to the system to schedule a new task for the current application that will trigger at the given
-<code>time</code> (number of milliseconds since the epoch). If the <code>time</code> argument is in the past, the task
-will be executed as soon as possible, asynchronously. The system <em class="ct">must</em> associate the
-<span>JSON-serializable <code>data</code> with the task if provided.</span>
-</li>
-<li>
-<span>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.</span>
-</li>
-<li>
-<span>Return <em>promise</em> and run the remaining steps asynchronously.</span>
-</li>
-<li>
-<span>If an error occurs, run these substeps and then terminate these steps:</span>
-<ol>
-<li>
-<span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is
-<code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds an implementation-dependent size limit, or
-whose <code>name</code> is the same as the error returned otherwise.</span>
-</li>
-<li>
-<span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
-</li>
-</ol>
-</li>
-<li>
-<span>When the operation completes successfully, run these substeps:</span>
-<ol>
-<li>
-<span>Let <em>task</em> be a new <code>ScheduledTask</code> object.</span>
-</li>
-<li>
-<span>Set <em>task</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly
-registered task.</span>
-</li>
-<li>
-<span>Set <em>task</em>'s <code>time</code> attribute to the <code>time</code> argument.</span>
-</li>
-<li>
-<span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
-</li>
-<li>
-<span>Run <em>resolver</em>'s internal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
-</li>
-</ol>
-</li>
-</ol>
-<p>
-<span>When invoked, the <dfn title="TaskScheduler-remove"><code>remove(<var>taskId</var>)</code></dfn> method
-<em class="ct">must</em> run the following steps:</span>
-</p>
-<ol>
-<li>
-<span>Make a request to the system to unregister the task with the given unique <code>taskId</code> identifier.</span>
-</li>
-<li>
-<span>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.</span>
-</li>
-<li>
-<span>Return <em>promise</em> and run the remaining steps asynchronously.</span>
-</li>
-<li>
-<span>If an error occurs, run these substeps and then terminate these steps:</span>
-<ol>
-<li>
-<span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
-returned.</span>
-</li>
-<li>
-<span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
-</li>
-</ol>
-</li>
-<li>
-<span>When the operation completes successfully, run these substeps:</span>
-<ol>
-<li>
-<span>Let <em>removed</em> be a boolean value.</span>
-</li>
-<li>
-<span>Set <em>removed</em> to <code>true</code> if the task was removed, and to <code>false</code> if there was no task
-with the given identifier.</span>
-</li>
-<li>
-<span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>removed</em> as
-<code>value</code>.</span>
-</li>
-</ol>
-</li>
-</ol>
-<h3>
-<span>Interface <code title="">ScheduledTask</code></span>
-</h3>
-<p>
-<span>The <code>ScheduledTask</code> interface captures the properties of a scheduled task.</span>
-</p>
-<pre class="idl">
-<span>interface <dfn>ScheduledTask</dfn> {
-  readonly attribute DOMString <span title="ScheduledTask-id">id</span>;
-  readonly attribute DOMTimeStamp <span title="ScheduledTask-time">time</span>;
-  readonly attribute any <span title="ScheduledTask-data">data</span>;
-};</span>
-</pre>
-<p>
-The <dfn title="ScheduledTask-id"><code>id</code></dfn> attribute returns an identifier for the given
-<code>ScheduledTask</code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain
-this identifier when a <code>ScheduledTask</code> is added.
-</p>
-<p>
-The <dfn title="ScheduledTask-time"><code>time</code></dfn> attribute is the time at which this task is scheduled to
-fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, the task may be delayed past this time.
-</p>
-<p>
-The <dfn title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
-data</span> associated with the task.
-</p>
-<h2>
-Events
-</h2>
-<p>
-The Service Worker specification defines a <code>ServiceWorkerGlobalScope</code> interface
-<span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
-</p>
-<pre class="idl">
-partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
- attribute EventHandler <span title="task-system-message"><a href="#ontask-event-handler">ontask</a></span>;
-};</pre>
-<h3>
-Event Handler
-</h3>
-The following is the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers">event handler</a> (and its corresponding <a href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-event-type">event handler event type</a>) that must be supported as attribute by the <code><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-interface">ServiceWorkerGlobalScope</a></code> object.
-<table>
-  <thead>
-    <tr>
-      <th><a href="http://www.whatwg.org/specs/web-apps/current-work/#event-handlers">event handler</a></th>
-      <th><a href="http://www.whatwg.org/specs/web-apps/current-work/#event-handler-event-type">event handler event type</a></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><dfn id="ontask-event-handler"><code>ontask</code></dfn></td>
-      <td><code>task</code></td>
-    </tr>
-  </tbody>
-</table>
-<h3>
-The <code title="task-system-message">TaskEvent</code> Interface
-</h3>
-The <code>TaskEvent</code> interface represents a scheduled task.
-<pre class="idl">
-interface <dfn>TaskEvent</dfn> : <span>ExtendableEvent</span> {
- readonly attribute <span title="ScheduledTask">ScheduledTask</span> <span title="ScheduledTask">task</span>;
-};</span></pre>
-<p>
-<h3>
-Firing <code>task</code> event to service worker
-</h3>
-A <code>task</code> <span>event</span> is fired when a scheduled task should be
-executed. The scheduled task is originated from the system and will wake up a <span>service worker</span> if it is not currently running.
-</p>
-<p>When the scheduled task <em>task</em> went off by the system, the user agent must (unless otherwise specified) run these steps:</p>
-<ol>
-  <li>Let <em>callback</em> be an algorithm that when invoked with a <em>global</em>, <a href="#fire-a-service-worker-task-event">fires a service worker task event</a> named <code>task</code> given <em>task</em> on <em>global</em>.</li>
-  <li>Then run <span>Handle Functional Event</span> with <em>task</em>'s <span>service worker registration</span> and <em>callback</em>.</li>
-</ol>
-<p>To <dfn id="fire-a-service-worker-task-event">fire a service worker task event named e</dfn> given <em>task</em>, <span>fire an event named e</span> with an <span>event</span> using the <code>TaskEvent</code> interface whose <code>task</code> attribute is initialized to a new <code>ScheduledEvent</code> object representing <em>task</em>.</p>
-<h2 class="no-num">
-References
-</h2>
-<div id="anolis-references"></div>
-<h2 class="no-num" id="acknowledgments">
-Acknowledgments
-</h2>
-<p>
-We would like to thank Kan-Ru Chen, Mounir Lamouri, Gene Lian and Jonas Sicking for their work on the API design, as
-well as the WebAPI/B2G teams at Mozilla <span data-anolis-ref="">B2G-ALARM</span>.
-</p>
+            function onError(error) {
+                alert("Sorry, couldn't set the alarm: " + error);
+            }
+
+            navigator.serviceWorker.ready.then(function(serviceWorkerRegistration) {
+                serviceWorkerRegistration.taskScheduler.add(Date.now() + (10 * 60000), {
+                    message: "It's been 10 minutes, your soup is ready!"
+                }).then(onTaskAdded, onError);
+            });
+        </pre>
+
+        <p>
+            How to get all the scheduled tasks whose time is in the future?
+        </p>
+        <pre>
+            navigator.serviceWorker.getRegistration().then(function(registration) {
+                registration.taskScheduler.getPendingTasks().then(function(tasks) {
+                    alert("There are " + tasks.length + " tasks set.");
+                }, function(error) {
+                    alert("An error occurred getting the scheduled tasks.");
+                });
+            }, function(error) {
+                alert("An error occurred getting the scheduled tasks.");
+            });
+        </pre>
+
+        <p>
+            How to remove a scheduled task?
+        </p>
+        <pre>
+            navigator.serviceWorker.getRegistration().then(function(registration) {
+                var request = registration.taskScheduler.remove(id).then(function() {
+                    alert("Task removed");
+                    }, function(error) {
+                        alert("Sorry, can't remove the task.");
+                    });
+                }, function(error) {
+                    alert("An error occurred getting the scheduled tasks.");
+                });
+        </pre>
+    </div>
+
+    <h2 id="conformance">
+        Conformance
+    </h2>
+    <p>
+        This specification defines conformance criteria for a single product: the <dfn id="ua">user agent</dfn> that implements
+        the interfaces that it contains.
+    </p>
+    <p>
+        Implementations that use ECMAScript to implement the APIs defined in this specification MUST implement them in a manner
+        consistent with the <a href="http://www.w3.org/TR/WebIDL/#ecmascript-binding">ECMAScript Bindings</a> defined in the
+        <cite>Web IDL specification</cite> <span data-anolis-ref="">WEBIDL</span>, as this specification uses that
+        specification and terminology.
+    </p>
+    <h2 id="terminology">
+        Terminology
+    </h2>
+    <p>
+        A <dfn>JSON-serializable object</dfn> is an <a href=
+        "http://dev.w3.org/2006/webapi/WebIDL/#idl-object"><code>object</code></a> that when <a href=
+        "http://dev.w3.org/2006/webapi/WebIDL/#idl-stringifiers">serialized</a> or <a href=
+        "http://dev.w3.org/2006/webapi/WebIDL/#idl-serializers">stringified</a> conforms to the JSON Grammar as defined in
+        <span data-anolis-ref="">ECMASCRIPT</span>.
+    </p>
+    <p>
+        The <dfn><code><a href="http://dev.w3.org/html5/spec/webappapis.html#eventhandler">EventHandler</a></code></dfn>
+        interface represents a callback used for handling events as defined in <span data-anolis-ref="">HTML5</span>.
+    </p>
+    <p>
+        The <dfn><code><a href=
+        "https://people.mozilla.org/~jorendorff/es6-draft.html#sec-promise-objects">Promise</a></code></dfn> interface provides
+        asynchronous access to the result of an operation that is ongoing, has yet to start, or has completed, as defined in
+        <span data-anolis-ref="">ECMASCRIPT6</span>.
+    </p>
+    <p>
+        The concepts <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#queue-a-task">queue a task</a></dfn>,
+        <dfn><a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-handler-idl-attributes">event handler
+        IDL attribute</a></dfn> and <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#fire-a-simple-event">fire a
+        simple event</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
+    </p>
+    <p>
+        The concepts <dfn><a href="https://dom.spec.whatwg.org/#concept-event">event</a></dfn> and
+        <dfn><a href="https://dom.spec.whatwg.org/#concept-event-fire">fire an event named e</a></dfn>are defined in <span data-anolis-ref="">DOM</span>.
+    </p>
+    <p>
+        The terms <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handlers">event handler</a></dfn> and
+        <dfn><a href="http://dev.w3.org/html5/spec/webappapis.html#event-handler-event-type">event handler event
+            types</a></dfn> are defined in <span data-anolis-ref="">HTML5</span>.
+    </p>
+    <p>
+        <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#dfn-service-worker">Service worker</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#dfn-service-worker-registration">service worker registration</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-interface">ServiceWorker</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-registration-interface">ServiceWorkerRegistration</a></dfn>,
+        <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-interface">ServiceWorkerGlobalScope</a></dfn>, <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#extendable-event-interface">ExtendableEvent</a></dfn>, and <dfn><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#handle-functional-event-algorithm">Handle Functional Event</a></dfn> are defined in
+        <span data-anolis-ref="">SERVICE-WORKERS</span>.
+    </p>
+    <h2 id="requirements">
+        Requirements
+    </h2>
+    <p>
+        Below is a summary of requirements associated with this API:
+    </p>
+    <ol>
+        <li>An application <em class="ct">must</em> only be able to access its own scheduled tasks.
+        </li>
+        <li>A scheduled task identifier <em class="ct">must</em> be unique within the application origin.
+        </li>
+        <li>A scheduled task <em class="ct">must</em> persist if the system is restarted.
+        </li>
+        <li>A scheduled task <em class="ct">must</em> actively wake the system if the scheduled time is reached while sleeping.
+        </li>
+        <li>A scheduled task that was missed (e.g. because the device was off or the clock jumped past it) should be fired as
+            soon as possible.
+        </li>
+        <li>A scheduled task and its associated data <em class="ct">must</em> be removed when the application's service worker registration is uninstalled.
+        </li>
+    </ol>
+    <h2>
+        Task Scheduler API
+    </h2>
+    <p>
+        <em>This section is non-normative.</em>
+    </p>
+    <p>
+        The task scheduler supports the following features:
+    </p>
+    <ul>
+        <li>Web applications can schedule multiple tasks and get a returned ID for each of them.
+        </li>
+        <li>Each <code>ScheduledTask</code> has a unique identifier that can be used to specify and remove the scheduled task.
+        </li>
+        <li>Web applications can pass a <span>JSON-serializable object</span> to describe more details about each task setting.
+        </li>
+        <li>When a scheduled time is reached, an <code title="task-system-message">task</code> event is
+            sent to the application.
+        </li>
+        <li>ScheduledTask API actually does more than <code>setTimeout()</code> because it can actively <em>wake</em> the
+            system from sleeping and scheduled task are not lost when closing the application or restarting the system.
+        </li>
+    </ul>
+    <h3>
+        Interface <code title="">ServiceWorkerRegistration</code>
+    </h3>
+    <p>
+        The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
+        <span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
+    </p>
+    <pre class="idl">
+        partial interface <span>ServiceWorkerRegistration</span> {
+            readonly attribute <span>TaskScheduler</span> <span title="ServiceWorkerRegistration-taskScheduler">taskScheduler</span>;
+        }
+    </pre>
+    <p>
+        The <dfn title="ServiceWorkerRegistration-taskScheduler"><code>taskScheduler</code></dfn> attribute provides the developer access to a
+        <code>TaskScheduler</code>.
+    </p>
+    <h3>
+        Interface <code title="">TaskScheduler</code>
+    </h3>
+    <p>
+        The <code>TaskScheduler</code> interface exposes methods to get, set or remove scheduled tasks. ScheduledTasks are
+        application specific, so there is no way to see the tasks scheduled by other applications nor to modify them.
+        Developers should set an <a href="#ontask-event-handler">ontask</a> event handler in the associated <span>service worker</span> to listen for the <code title="task-system-message">task</code> event when scheduled tasks should be executed.
+    </p>
+    <pre class="idl">
+        interface <dfn>TaskScheduler</dfn> {
+            <span>Promise</span> <span title="TaskScheduler-getPendingTasks">getPendingTasks</span>();
+            <span>Promise</span> <span title="TaskScheduler-add">add</span>(DOMTimeStamp <var title="">time</var>, optional any <var title="">data</var>);
+            <span>Promise</span> <span title="TaskScheduler-remove">remove</span>(DOMString <var title="">taskId</var>);
+        };
+    </pre>
+    <p>
+        When invoked, the <dfn title="TaskScheduler-getPendingTasks"><code>getPendingTasks()</code></dfn> method <em class=
+        "ct">must</em> run the following steps:
+    </p>
+    <ol>
+        <li>Make a request to the system to retrieve the tasks that were registered by the current application and whose
+            scheduled time is in the future.
+        </li>
+        <li>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.
+        </li>
+        <li>Return <em>promise</em> and run the remaining steps asynchronously.
+        </li>
+        <li>If an error occurs, run these substeps and then terminate these steps:
+            <ol>
+                <li>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
+                    returned.
+                </li>
+                <li>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.
+                </li>
+            </ol>
+        </li>
+        <li>When the operation completes successfully, run these substeps:
+            <ol>
+                <li>Let <em>tasks</em> be a new array containing the <code>ScheduledTask</code> objects that were retrieved.
+                </li>
+                <li>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>tasks</em> as <code>value</code>.
+                </li>
+            </ol>
+        </li>
+    </ol>
+    <p>
+        When invoked, the <dfn title="TaskScheduler-add"><code>add(<var>time</var>[, <var>data</var>])</code></dfn> method
+        <em class="ct">must</em> run the following steps:
+    </p>
+    <ol>
+        <li>Make a request to the system to schedule a new task for the current application that will trigger at the given
+            <code>time</code> (number of milliseconds since the epoch). If the <code>time</code> argument is in the past, the task
+            will be executed as soon as possible, asynchronously. The system <em class="ct">must</em> associate the
+            <span>JSON-serializable <code>data</code> with the task if provided.</span>
+        </li>
+        <li>
+            <span>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.</span>
+        </li>
+        <li>
+            <span>Return <em>promise</em> and run the remaining steps asynchronously.</span>
+        </li>
+        <li>
+            <span>If an error occurs, run these substeps and then terminate these steps:</span>
+            <ol>
+                <li>
+                    <span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is
+                    <code>"QuotaExceededError"</code> if the <code>data</code> argument exceeds an implementation-dependent size limit, or
+                    whose <code>name</code> is the same as the error returned otherwise.</span>
+                </li>
+                <li>
+                    <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
+                </li>
+            </ol>
+        </li>
+        <li>
+            <span>When the operation completes successfully, run these substeps:</span>
+            <ol>
+                <li>
+                    <span>Let <em>task</em> be a new <code>ScheduledTask</code> object.</span>
+                </li>
+                <li>
+                <span>Set <em>task</em>'s <code>id</code> attribute to the unique identifier returned by the system for the newly
+                    registered task.</span>
+                </li>
+                <li>
+                    <span>Set <em>task</em>'s <code>time</code> attribute to the <code>time</code> argument.</span>
+                </li>
+                <li>
+                    <span>Set <em>task</em>'s <code>data</code> attribute to the <code>data</code> argument, if provided.</span>
+                </li>
+                <li>
+                    <span>Run <em>resolver</em>'s internal <code>fulfill</code> algorithm with <em>task</em> as <code>value</code>.</span>
+                </li>
+            </ol>
+        </li>
+    </ol>
+    <p>
+        <span>When invoked, the <dfn title="TaskScheduler-remove"><code>remove(<var>taskId</var>)</code></dfn> method
+            <em class="ct">must</em> run the following steps:</span>
+    </p>
+    <ol>
+        <li>
+            <span>Make a request to the system to unregister the task with the given unique <code>taskId</code> identifier.</span>
+        </li>
+        <li>
+            <span>Let <em>promise</em> be a new <code>Promise</code> object and <em>resolver</em> its associated resolver.</span>
+        </li>
+        <li>
+            <span>Return <em>promise</em> and run the remaining steps asynchronously.</span>
+        </li>
+        <li>
+            <span>If an error occurs, run these substeps and then terminate these steps:</span>
+            <ol>
+                <li>
+                <span>Let <em>error</em> be a new <code>DOMException</code> exception whose <code>name</code> is the same as the error
+                    returned.</span>
+                </li>
+                <li>
+                    <span>Run <em>resolver</em>'s internal <em>reject</em> algorithm with <em>error</em> as <code>value</code>.</span>
+                </li>
+            </ol>
+        </li>
+        <li>
+            <span>When the operation completes successfully, run these substeps:</span>
+            <ol>
+                <li>
+                    <span>Let <em>removed</em> be a boolean value.</span>
+                </li>
+                <li>
+                    <span>Set <em>removed</em> to <code>true</code> if the task was removed, and to <code>false</code> if there was no task
+                    with the given identifier.</span>
+                </li>
+                <li>
+                    <span>Run <em>resolver</em>'s intenal <code>fulfill</code> algorithm with <em>removed</em> as
+                    <code>value</code>.</span>
+                </li>
+            </ol>
+        </li>
+    </ol>
+
+    <h3>
+        <span>Interface <code title="">ScheduledTask</code></span>
+    </h3>
+    <p>
+        <span>The <code>ScheduledTask</code> interface captures the properties of a scheduled task.</span>
+    </p>
+    <pre class="idl">
+        <span>interface <dfn>ScheduledTask</dfn> {
+            readonly attribute DOMString <span title="ScheduledTask-id">id</span>;
+            readonly attribute DOMTimeStamp <span title="ScheduledTask-time">time</span>;
+            readonly attribute any <span title="ScheduledTask-data">data</span>;
+        };</span>
+    </pre>
+    <p>
+        The <dfn title="ScheduledTask-id"><code>id</code></dfn> attribute returns an identifier for the given
+        <code>ScheduledTask</code> object that is unique within the origin. An implementation <em class="ct">must</em> maintain
+        this identifier when a <code>ScheduledTask</code> is added.
+    </p>
+    <p>
+        The <dfn title="ScheduledTask-time"><code>time</code></dfn> attribute is the time at which this task is scheduled to
+        fire, in milliseconds past the epoch (e.g. Date.now() + n). Due to performance, the task may be delayed past this time.
+    </p>
+    <p>
+        The <dfn title="ScheduledTask-data"><code>data</code></dfn> attribute optionally represents the <span>JSON-serializable
+        data</span> associated with the task.
+    </p>
+    <h2>
+        Events
+    </h2>
+    <p>
+        The Service Worker specification defines a <code>ServiceWorkerGlobalScope</code> interface
+        <span data-anolis-ref="">SERVICE-WORKERS</span>, which this specification extends.
+    </p>
+    <pre class="idl">
+        partial interface <span class="idlInterfaceID">ServiceWorkerGlobalScope</span> {
+        attribute EventHandler <span title="task-system-message"><a href="#ontask-event-handler">ontask</a></span>;
+    };</pre>
+
+    <h3>
+        Event Handler
+    </h3>
+        The following is the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handlers">event handler</a> (and its corresponding <a href="https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-event-type">event handler event type</a>) that must be supported as attribute by the <code><a href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope-interface">ServiceWorkerGlobalScope</a></code> object.
+        <table>
+            <thead>
+                <tr>
+                  <th><a href="http://www.whatwg.org/specs/web-apps/current-work/#event-handlers">event handler</a></th>
+                  <th><a href="http://www.whatwg.org/specs/web-apps/current-work/#event-handler-event-type">event handler event type</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><dfn id="ontask-event-handler"><code>ontask</code></dfn></td>
+                    <td><code>task</code></td>
+                </tr>
+            </tbody>
+        </table>
+    <h3>
+        The <code title="task-system-message">TaskEvent</code> Interface
+    </h3>
+
+    <p> The <code>TaskEvent</code> interface represents a scheduled task. </p>
+    <pre class="idl">
+        interface <dfn>TaskEvent</dfn> : <span>ExtendableEvent</span> {
+            readonly attribute <span title="ScheduledTask">ScheduledTask</span> <span title="ScheduledTask">task</span>;
+        };</span>
+    </pre>
+    <p>
+        <h3>
+            Firing <code>task</code> event to service worker
+        </h3>
+        A <code>task</code> <span>event</span> is fired when a scheduled task should be
+        executed. The scheduled task is originated from the system and will wake up a <span>service worker</span> if it is not currently running.
+    </p>
+
+    <p>When the scheduled task <em>task</em> went off by the system, the user agent must (unless otherwise specified) run these steps:</p>
+    <ol>
+        <li>Let <em>callback</em> be an algorithm that when invoked with a <em>global</em>, <a href="#fire-a-service-worker-task-event">fires a service worker task event</a> named <code>task</code> given <em>task</em> on <em>global</em>.</li>
+        <li>Then run <span>Handle Functional Event</span> with <em>task</em>'s <span>service worker registration</span> and <em>callback</em>.</li>
+    </ol>
+    <p>To <dfn id="fire-a-service-worker-task-event">fire a service worker task event named e</dfn> given <em>task</em>, <span>fire an event named e</span> with an <span>event</span> using the <code>TaskEvent</code> interface whose <code>task</code> attribute is initialized to a new <code>ScheduledEvent</code> object representing <em>task</em>.
+    </p>
+    <h2 class="no-num">
+        References
+    </h2>
+    <div id="anolis-references"></div>
+    <h2 class="no-num" id="acknowledgments">
+        Acknowledgments
+    </h2>
+    <p>
+        We would like to thank Kan-Ru Chen, Mounir Lamouri, Gene Lian and Jonas Sicking for their work on the API design, as
+        well as the WebAPI/B2G teams at Mozilla <span data-anolis-ref="">B2G-ALARM</span>.
+    </p>
 </body>
 </html>
