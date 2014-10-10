@@ -103,7 +103,7 @@ Abstract
 This specification defines an API to schedule a task at a specified time. When the indicated time is reached, the
 application that scheduled the task will be notified via a functional event on a service worker. A task event will be delivered to a service worker, regardless
 of whether the application is active on user agent. Applications such as an alarm clock or an
-auto-updater may utilize this API to perform some action at a specified time.
+auto-updater may utilize this API to perform certain action at a specified time.
 </p>
 <h2 class="no-num no-toc" id="toc">
 Table of Contents
@@ -126,7 +126,7 @@ How to set an alarm 10 minutes from now?
 this.ontask = function(task) {
   alert(task.data.message);
   console.log("Task scheduled at: " + new Date(task.time));
-  // From here we can write the data to IndexedDB, send it to any open windows,
+  // From here on we can write the data to IndexedDB, send it to any open windows,
   // display a notification, etc.
 }
 
@@ -292,8 +292,7 @@ Interface <code title="">TaskScheduler</code>
 <p>
 The <code>TaskScheduler</code> interface exposes methods to get, set or remove scheduled tasks. ScheduledTasks are
 application specific, so there is no way to see the tasks scheduled by other applications nor to modify them.
-Developers should set a message handler for the <code title="task-system-message">task</code> <code>system
-message</code> to listen for when scheduled tasks should be executed.
+Developers should set an <a href="#ontask-event-handler">ontask</a> event handler in the associated <span>service worker</span> to listen for the <code title="task-system-message">task</code> event when scheduled tasks should be executed.
 </p>
 <pre class="idl">
 interface <dfn>TaskScheduler</dfn> {
